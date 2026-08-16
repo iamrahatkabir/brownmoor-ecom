@@ -29,6 +29,7 @@ export type VariantSpec = {
   option: string
   price: number
   stock: number
+  weight: number
 }
 
 export type ProductSpec = {
@@ -45,6 +46,7 @@ export type ProductSpec = {
   title: string
   variantType?: string
   variants?: VariantSpec[]
+  weight?: number
 }
 
 export const CATEGORIES: CategorySpec[] = [
@@ -95,9 +97,9 @@ export const PRODUCTS: ProductSpec[] = [
     title: 'Tri-Ply Stainless Steel Saucepan',
     variantType: 'size',
     variants: [
-      { compareAt: 2900, option: '16cm', price: 2450, stock: 24 },
-      { compareAt: 3600, option: '20cm', price: 3100, stock: 18 },
-      { compareAt: null, option: '24cm', price: 3850, stock: 11 },
+      { compareAt: 2900, option: '16cm', price: 2450, stock: 24, weight: 900 },
+      { compareAt: 3600, option: '20cm', price: 3100, stock: 18, weight: 1200 },
+      { compareAt: null, option: '24cm', price: 3850, stock: 11, weight: 1600 },
     ],
   },
   {
@@ -111,6 +113,7 @@ export const PRODUCTS: ProductSpec[] = [
       { label: 'Capacity', value: '800 ml' },
     ],
     stock: 46,
+    weight: 450,
     title: 'Non-Stick Milk Pan',
   },
   {
@@ -126,8 +129,8 @@ export const PRODUCTS: ProductSpec[] = [
     title: 'Hard Anodised Frying Pan',
     variantType: 'size',
     variants: [
-      { compareAt: 2600, option: '24cm', price: 2200, stock: 20 },
-      { compareAt: null, option: '28cm', price: 2800, stock: 14 },
+      { compareAt: 2600, option: '24cm', price: 2200, stock: 20, weight: 1100 },
+      { compareAt: null, option: '28cm', price: 2800, stock: 14, weight: 1450 },
     ],
   },
   {
@@ -144,6 +147,7 @@ export const PRODUCTS: ProductSpec[] = [
       { label: 'Oven safe', value: 'Yes' },
     ],
     stock: 9,
+    weight: 3200,
     title: 'Cast Iron Skillet',
   },
   {
@@ -158,9 +162,9 @@ export const PRODUCTS: ProductSpec[] = [
     title: 'Aluminium Pressure Cooker',
     variantType: 'capacity',
     variants: [
-      { compareAt: 3400, option: '3 litre', price: 2900, stock: 15 },
-      { compareAt: null, option: '5 litre', price: 3600, stock: 12 },
-      { compareAt: null, option: '7 litre', price: 4300, stock: 6 },
+      { compareAt: 3400, option: '3 litre', price: 2900, stock: 15, weight: 1800 },
+      { compareAt: null, option: '5 litre', price: 3600, stock: 12, weight: 2400 },
+      { compareAt: null, option: '7 litre', price: 4300, stock: 6, weight: 3000 },
     ],
   },
   {
@@ -174,6 +178,7 @@ export const PRODUCTS: ProductSpec[] = [
       { label: 'Capacity', value: '5 litre' },
     ],
     stock: 7,
+    weight: 3400,
     title: 'Stainless Steel Pressure Cooker',
   },
   {
@@ -189,6 +194,7 @@ export const PRODUCTS: ProductSpec[] = [
       { label: 'Diameter', value: '32 cm' },
     ],
     stock: 17,
+    weight: 1600,
     title: 'Carbon Steel Wok',
   },
   {
@@ -203,8 +209,8 @@ export const PRODUCTS: ProductSpec[] = [
     title: 'Non-Stick Karai',
     variantType: 'size',
     variants: [
-      { compareAt: null, option: '26cm', price: 1950, stock: 28 },
-      { compareAt: 2800, option: '30cm', price: 2400, stock: 19 },
+      { compareAt: null, option: '26cm', price: 1950, stock: 28, weight: 1000 },
+      { compareAt: 2800, option: '30cm', price: 2400, stock: 19, weight: 1350 },
     ],
   },
   {
@@ -219,6 +225,7 @@ export const PRODUCTS: ProductSpec[] = [
       { label: 'Capacity', value: '900 g loaf' },
     ],
     stock: 33,
+    weight: 480,
     title: 'Carbon Steel Loaf Tin',
   },
   {
@@ -233,8 +240,8 @@ export const PRODUCTS: ProductSpec[] = [
     title: 'Springform Cake Tin',
     variantType: 'size',
     variants: [
-      { compareAt: null, option: '18cm', price: 1400, stock: 22 },
-      { compareAt: 2100, option: '22cm', price: 1750, stock: 16 },
+      { compareAt: null, option: '18cm', price: 1400, stock: 22, weight: 400 },
+      { compareAt: 2100, option: '22cm', price: 1750, stock: 16, weight: 520 },
     ],
   },
   {
@@ -248,6 +255,7 @@ export const PRODUCTS: ProductSpec[] = [
       { label: 'Cups', value: '12' },
     ],
     stock: 54,
+    weight: 260,
     title: 'Silicone Muffin Mould',
   },
   {
@@ -264,6 +272,7 @@ export const PRODUCTS: ProductSpec[] = [
       { label: 'Handle', value: 'Stabilised wood' },
     ],
     stock: 5,
+    weight: 320,
     title: "Damascus Chef's Knife",
   },
   {
@@ -277,6 +286,7 @@ export const PRODUCTS: ProductSpec[] = [
       { label: 'Blade', value: 'Stainless steel' },
     ],
     stock: 13,
+    weight: 1900,
     title: 'Stainless Steel Knife Set',
   },
   {
@@ -291,6 +301,7 @@ export const PRODUCTS: ProductSpec[] = [
       { label: 'Dimensions', value: '38 × 25 × 3 cm' },
     ],
     stock: 40,
+    weight: 1700,
     title: 'Acacia Wood Chopping Board',
   },
   {
@@ -304,6 +315,7 @@ export const PRODUCTS: ProductSpec[] = [
       { label: 'Pieces', value: '3' },
     ],
     stock: 31,
+    weight: 1400,
     title: 'Bamboo Chopping Board Set',
   },
   {
@@ -320,6 +332,7 @@ export const PRODUCTS: ProductSpec[] = [
       { label: 'Microwave safe', value: 'Yes' },
     ],
     stock: 8,
+    weight: 8500,
     title: 'Porcelain Dinner Set',
   },
   {
@@ -333,6 +346,7 @@ export const PRODUCTS: ProductSpec[] = [
       { label: 'Pieces', value: '5' },
     ],
     stock: 26,
+    weight: 2600,
     title: 'Airtight Glass Container Set',
   },
 ]

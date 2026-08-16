@@ -158,6 +158,7 @@ const seed = async (payload: Payload): Promise<void> => {
               priceInBDT: taka(spec.price ?? 0),
               priceInBDTEnabled: true,
               ...(spec.compareAt ? { compareAtPriceInBDT: taka(spec.compareAt) } : {}),
+              ...(spec.weight ? { weightGrams: spec.weight } : {}),
             }),
       },
     })
@@ -174,6 +175,7 @@ const seed = async (payload: Payload): Promise<void> => {
             priceInBDTEnabled: true,
             product: product.id,
             title: `${spec.title} — ${variant.option}`,
+            weightGrams: variant.weight,
             ...(variant.compareAt ? { compareAtPriceInBDT: taka(variant.compareAt) } : {}),
           },
         })

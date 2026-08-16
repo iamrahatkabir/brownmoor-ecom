@@ -1,6 +1,7 @@
 import type { CollectionOverride } from '@payloadcms/plugin-ecommerce/types'
 
 import { compareAtPriceField } from '../fields/compareAtPrice'
+import { weightField } from '../fields/weight'
 import { slugField } from '../fields/slugField'
 
 /**
@@ -108,6 +109,15 @@ export const productsCollectionOverride: CollectionOverride = ({ defaultCollecti
             {
               name: 'careInstructions',
               type: 'textarea',
+            },
+            // Only used when the product has no variants; a variant carries
+            // its own weight, since sizes differ.
+            {
+              ...weightField(),
+              admin: {
+                ...weightField().admin,
+                condition: (data) => !data?.enableVariants,
+              },
             },
           ],
           label: 'Specifications',

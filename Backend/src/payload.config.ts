@@ -18,11 +18,13 @@ import {
 } from './access'
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
+import { ordersCollectionOverride } from './collections/Orders'
 import { productsCollectionOverride } from './collections/Products'
 import { Users } from './collections/Users'
 import { variantsCollectionOverride } from './collections/Variants'
 import { currenciesConfig } from './currencies'
 import { HomePage } from './globals/HomePage'
+import { ShippingSettings } from './globals/ShippingSettings'
 import { cashOnDeliveryAdapter } from './payments/cashOnDelivery'
 
 const filename = fileURLToPath(import.meta.url)
@@ -48,7 +50,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Categories],
-  globals: [HomePage],
+  globals: [HomePage, ShippingSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -107,7 +109,9 @@ export default buildConfig({
         slug: 'users',
       },
       inventory: true,
-      orders: true,
+      orders: {
+        ordersCollectionOverride,
+      },
       payments: {
         paymentMethods: [cashOnDeliveryAdapter()],
       },

@@ -10,6 +10,9 @@ import type {
 import { randomBytes } from 'crypto'
 
 import type { Order, Transaction } from '../payload-types'
+import type { ShippingLine } from '../shipping/calculate'
+
+import { quoteShipping } from '../shipping/calculate'
 
 /**
  * Cash on delivery.
@@ -176,11 +179,26 @@ export const cashOnDeliveryAdapter = (props?: PaymentAdapterArgs): PaymentAdapte
 
         const customerEmail = data?.customerEmail || transaction.customerEmail
 
+        // Priced here, at confirmation, rather than trusting a figure sent by
+        // the client — otherwise a crafted request could set its own delivery
+        // charge. The cart subtotal is likewise taken from the transaction.
+        const shipping = await quoteShipping({
+          city: shippingAddress?.city,
+          items: items as ShippingLine[],
+          payload,
+          subtotal: transaction.amount ?? 0,
+        })
+
         const order = await payload.create({
           collection: ordersSlug as CollectionSlug,
           data: {
-            amount: transaction.amount,
+            // Grand total: goods plus delivery. The customer hands the courier
+            // exactly this amount.
+            amount: (transaction.amount ?? 0) + shipping.amount,
             currency: transaction.currency,
+            shippingAmount: shipping.amount,
+            shippingZone: shipping.zoneLabel,
+            totalWeightGrams: shipping.totalWeightGrams,
             ...(transaction.customer
               ? { customer: transaction.customer }
               : { customerEmail }),

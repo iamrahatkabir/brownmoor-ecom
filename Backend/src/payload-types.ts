@@ -119,9 +119,11 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     'home-page': HomePage;
+    'shipping-settings': ShippingSetting;
   };
   globalsSelect: {
     'home-page': HomePageSelect<false> | HomePageSelect<true>;
+    'shipping-settings': ShippingSettingsSelect<false> | ShippingSettingsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -305,6 +307,10 @@ export interface Variant {
    * Original price, shown struck through. Leave empty when the product is not on sale.
    */
   compareAtPriceInBDT?: number | null;
+  /**
+   * Shipping weight in grams, including packaging. Used to price delivery.
+   */
+  weightGrams?: number | null;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -370,6 +376,10 @@ export interface Product {
       }[]
     | null;
   careInstructions?: string | null;
+  /**
+   * Shipping weight in grams, including packaging. Used to price delivery.
+   */
+  weightGrams?: number | null;
   /**
    * URL segment. Generated from the title if left blank.
    */
@@ -477,6 +487,18 @@ export interface Order {
   status?: OrderStatus;
   amount?: number | null;
   currency?: 'BDT' | null;
+  /**
+   * Delivery charge at the time of ordering. Included in the order total.
+   */
+  shippingAmount?: number | null;
+  /**
+   * Delivery zone this order was priced against.
+   */
+  shippingZone?: string | null;
+  /**
+   * Parcel weight for the courier docket.
+   */
+  totalWeightGrams?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -770,6 +792,7 @@ export interface VariantsSelect<T extends boolean = true> {
   priceInBDTEnabled?: T;
   priceInBDT?: T;
   compareAtPriceInBDT?: T;
+  weightGrams?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -829,6 +852,7 @@ export interface ProductsSelect<T extends boolean = true> {
         id?: T;
       };
   careInstructions?: T;
+  weightGrams?: T;
   slug?: T;
   categories?: T;
   featured?: T;
@@ -893,6 +917,9 @@ export interface OrdersSelect<T extends boolean = true> {
   status?: T;
   amount?: T;
   currency?: T;
+  shippingAmount?: T;
+  shippingZone?: T;
+  totalWeightGrams?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1014,6 +1041,53 @@ export interface HomePage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "shipping-settings".
+ */
+export interface ShippingSetting {
+  id: number;
+  /**
+   * Checked top to bottom. The first zone whose cities match the delivery address wins.
+   */
+  zones: {
+    /**
+     * Shown to the customer at checkout.
+     */
+    label: string;
+    /**
+     * Comma-separated city names this zone covers, e.g. "dhaka, savar". Case-insensitive. Leave empty for the fallback zone.
+     */
+    cities?: string | null;
+    /**
+     * Charged for any parcel up to the included weight.
+     */
+    baseRate: number;
+    /**
+     * Weight covered by the base rate, in grams.
+     */
+    includedWeightGrams: number;
+    /**
+     * Added per extra kilogram, or part of one, above the allowance.
+     */
+    surchargePerKg?: number | null;
+    /**
+     * Use this zone when no other matches. Exactly one zone should have this ticked.
+     */
+    isDefault?: boolean | null;
+    id?: string | null;
+  }[];
+  /**
+   * Order subtotal in BDT above which delivery is free. Leave empty to always charge.
+   */
+  freeShippingThreshold?: number | null;
+  /**
+   * Assumed weight for a product with none set, so an unweighed item never ships as if it were free of charge.
+   */
+  defaultItemWeightGrams: number;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home-page_select".
  */
 export interface HomePageSelect<T extends boolean = true> {
@@ -1024,6 +1098,28 @@ export interface HomePageSelect<T extends boolean = true> {
   ctaLink?: T;
   featuredHeading?: T;
   featuredIntro?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "shipping-settings_select".
+ */
+export interface ShippingSettingsSelect<T extends boolean = true> {
+  zones?:
+    | T
+    | {
+        label?: T;
+        cities?: T;
+        baseRate?: T;
+        includedWeightGrams?: T;
+        surchargePerKg?: T;
+        isDefault?: T;
+        id?: T;
+      };
+  freeShippingThreshold?: T;
+  defaultItemWeightGrams?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

@@ -51,15 +51,15 @@ export function Header({ categories }: { categories: CategoryTree[] }) {
           <MobileNav categories={categories} />
 
           <Link className="shrink-0" href="/">
-            {/* Intrinsic size is 132×24; rendered smaller so it stays crisp
-                on high-density screens. */}
+            {/* Intrinsic 395×72, rendered at 20–24px tall — roughly 3× the
+                display size, so it stays sharp on high-density screens. */}
             <Image
               alt="Brownmoor"
               className="h-5 w-auto md:h-6"
-              height={24}
+              height={72}
               priority
               src="/logo.png"
-              width={132}
+              width={395}
             />
           </Link>
 

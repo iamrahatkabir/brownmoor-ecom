@@ -19,9 +19,9 @@ export function Footer({ categories }: { categories: CategoryTree[] }) {
             <Image
               alt="Brownmoor"
               className="h-6 w-auto brightness-0 invert"
-              height={24}
+              height={72}
               src="/logo.png"
-              width={132}
+              width={395}
             />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-paper/60">
               Kitchenware built to be used every day — and to last long enough to be worth it.
