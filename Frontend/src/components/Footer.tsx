@@ -18,13 +18,17 @@ export function Footer({ categories }: { categories: CategoryTree[] }) {
       <div className="mx-auto max-w-[1280px] px-4 py-12 md:py-16">
         <div className="grid gap-10 md:grid-cols-4 md:gap-8">
           <div className="md:col-span-1">
-            {/* The wordmark is near-black, so it needs inverting on ink. */}
+            {/* The light artwork — white wordmark, white strawberry with ink
+                seeds — drawn for a dark ground, so no filter is needed here.
+                `unoptimized` because Next's image optimiser refuses SVG by
+                default, and vector art gains nothing from rasterising anyway. */}
             <Image
               alt="Brownmoor"
-              className="h-6 w-auto brightness-0 invert"
+              className="h-7 w-auto"
               height={72}
-              src="/logo.png"
-              width={395}
+              src="/logo-light.svg"
+              unoptimized
+              width={393}
             />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-paper/60">
               Kitchenware built to be used every day — and to last long enough to be worth it.
