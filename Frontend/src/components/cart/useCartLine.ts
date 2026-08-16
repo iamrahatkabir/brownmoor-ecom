@@ -1,7 +1,7 @@
 'use client'
 
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 type CartLine = {
   id?: string
@@ -32,14 +32,6 @@ export function useCartLine(productId: number, variantId?: number) {
    * state at once. Only the control that was actually pressed should react.
    */
   const [isPending, setIsPending] = useState(false)
-  const mounted = useRef(true)
-
-  useEffect(
-    () => () => {
-      mounted.current = false
-    },
-    [],
-  )
 
   const run = useCallback(async (action: () => Promise<unknown> | undefined) => {
     setIsPending(true)
@@ -47,11 +39,12 @@ export function useCartLine(productId: number, variantId?: number) {
     try {
       await action()
     } finally {
-      // A card can unmount mid-request — switching category, say — and setting
-      // state on a gone component is a no-op warning at best.
-      if (mounted.current) {
-        setIsPending(false)
-      }
+      // Always clears, unconditionally. An earlier version guarded this with a
+      // mounted ref whose cleanup ran under Strict Mode's double-invoke and was
+      // never reset, so the flag stuck on and left the control disabled for
+      // good. React 18 dropped the unmounted-setState warning that guard was
+      // for, so there is nothing to protect against.
+      setIsPending(false)
     }
   }, [])
 
