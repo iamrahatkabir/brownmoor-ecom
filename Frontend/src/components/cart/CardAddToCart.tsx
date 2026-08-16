@@ -19,13 +19,13 @@ export function CardAddToCart({
   productId: number
   stock: number
 }) {
-  const { add, decrement, inCart, increment, isLoading, quantity } = useCartLine(productId)
+  const { add, decrement, inCart, increment, isPending, quantity } = useCartLine(productId)
 
   if (inCart) {
     return (
       <QuantityStepper
         className="h-10"
-        disabled={isLoading}
+        disabled={isPending}
         max={stock}
         onDecrement={decrement}
         onIncrement={increment}
@@ -37,7 +37,7 @@ export function CardAddToCart({
   return (
     <button
       className="h-10 w-full bg-ink text-[11px] tracked text-paper transition-colors hover:bg-muted disabled:bg-wash disabled:text-faint"
-      disabled={isLoading}
+      disabled={isPending}
       onClick={() => add()}
       type="button"
     >

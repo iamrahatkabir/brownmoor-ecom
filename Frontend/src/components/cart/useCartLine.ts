@@ -1,7 +1,7 @@
 'use client'
 
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 type CartLine = {
   id?: string
@@ -22,7 +22,38 @@ const idOf = (value: { id: number } | number | undefined): number | undefined =>
  * decrements lives here, not in each button.
  */
 export function useCartLine(productId: number, variantId?: number) {
-  const { addItem, cart, decrementItem, incrementItem, isLoading, removeItem } = useCart()
+  const { addItem, cart, decrementItem, incrementItem, removeItem } = useCart()
+
+  /**
+   * Pending state is local, not the provider's `isLoading`.
+   *
+   * That flag is cart-wide: every card on the page subscribes to the same
+   * value, so one click would put every Add to cart button into a loading
+   * state at once. Only the control that was actually pressed should react.
+   */
+  const [isPending, setIsPending] = useState(false)
+  const mounted = useRef(true)
+
+  useEffect(
+    () => () => {
+      mounted.current = false
+    },
+    [],
+  )
+
+  const run = useCallback(async (action: () => Promise<unknown> | undefined) => {
+    setIsPending(true)
+
+    try {
+      await action()
+    } finally {
+      // A card can unmount mid-request — switching category, say — and setting
+      // state on a gone component is a no-op warning at best.
+      if (mounted.current) {
+        setIsPending(false)
+      }
+    }
+  }, [])
 
   const line = useMemo(() => {
     const items = (cart?.items ?? []) as CartLine[]
@@ -38,15 +69,15 @@ export function useCartLine(productId: number, variantId?: number) {
   const quantity = line?.quantity ?? 0
 
   const add = useCallback(
-    () => addItem({ product: productId, ...(variantId ? { variant: variantId } : {}) }),
-    [addItem, productId, variantId],
+    () => run(() => addItem({ product: productId, ...(variantId ? { variant: variantId } : {}) })),
+    [addItem, productId, run, variantId],
   )
 
   const increment = useCallback(() => {
     if (line?.id) {
-      return incrementItem(line.id)
+      return run(() => incrementItem(line.id!))
     }
-  }, [incrementItem, line])
+  }, [incrementItem, line, run])
 
   /** At one, the next step down empties the line rather than decrementing it. */
   const decrement = useCallback(() => {
@@ -54,8 +85,8 @@ export function useCartLine(productId: number, variantId?: number) {
       return
     }
 
-    return quantity <= 1 ? removeItem(line.id) : decrementItem(line.id)
-  }, [decrementItem, line, quantity, removeItem])
+    return run(() => (quantity <= 1 ? removeItem(line.id!) : decrementItem(line.id!)))
+  }, [decrementItem, line, quantity, removeItem, run])
 
-  return { add, decrement, increment, inCart: quantity > 0, isLoading, quantity }
+  return { add, decrement, increment, inCart: quantity > 0, isPending, quantity }
 }

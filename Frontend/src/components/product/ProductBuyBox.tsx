@@ -38,7 +38,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
 
   // Keyed on the selected variant, so switching size swaps which cart line the
   // controls act on.
-  const { add, decrement, inCart, increment, isLoading, quantity } = useCartLine(
+  const { add, decrement, inCart, increment, isPending, quantity } = useCartLine(
     product.id,
     hasVariants ? variantId : undefined,
   )
@@ -66,7 +66,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
 
   const stepper = (
     <QuantityStepper
-      disabled={isLoading}
+      disabled={isPending}
       max={stock}
       onDecrement={decrement}
       onIncrement={increment}
@@ -77,7 +77,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
   const addButton = (
     <button
       className="h-12 w-full bg-ink text-[11px] tracked text-paper transition-colors hover:bg-muted disabled:bg-wash disabled:text-faint"
-      disabled={soldOut || isLoading}
+      disabled={soldOut || isPending}
       onClick={() => add()}
       type="button"
     >
