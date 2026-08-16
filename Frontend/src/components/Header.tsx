@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { CONTACT } from '@/lib/contact'
 import type { CategoryTree } from '@/lib/types'
 
+import { SearchBar } from './SearchBar'
+
 import { CartCount } from './CartCount'
 import { CategoryNav } from './CategoryNav'
 import { MobileNav } from './MobileNav'
@@ -76,24 +78,9 @@ export function Header({ categories }: { categories: CategoryTree[] }) {
             />
           </Link>
 
-          <form action="/search" className="ml-auto hidden max-w-xl flex-1 md:block">
-            <div className="flex h-11 items-center rounded-lg border border-line focus-within:border-ink">
-              <input
-                aria-label="Search products"
-                className="h-full w-full bg-transparent px-4 text-sm outline-none placeholder:text-faint"
-                name="q"
-                placeholder="Search for products"
-                type="search"
-              />
-              <button
-                aria-label="Search"
-                className="flex h-full w-12 items-center justify-center text-muted hover:text-ink"
-                type="submit"
-              >
-                <SearchIcon />
-              </button>
-            </div>
-          </form>
+          {/* Centred: the logo and the actions size to their content, so the
+              search takes the remaining space and centres within it. */}
+          <SearchBar className="hidden flex-1 justify-center md:block" />
 
           <div className="ml-auto flex items-center gap-1 md:ml-0 md:gap-4">
             <Link

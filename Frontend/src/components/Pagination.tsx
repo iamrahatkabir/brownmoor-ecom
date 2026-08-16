@@ -21,7 +21,10 @@ export function Pagination({
     return null
   }
 
-  const href = (target: number) => (target === 1 ? basePath : `${basePath}?page=${target}`)
+  // basePath may already carry a query — the search results path does — so the
+  // separator has to be chosen rather than assumed to be "?".
+  const href = (target: number) =>
+    target === 1 ? basePath : `${basePath}${basePath.includes('?') ? '&' : '?'}page=${target}`
 
   // First, last, and the pages either side of the current one.
   const numbers = Array.from({ length: totalPages }, (_, index) => index + 1).filter(
