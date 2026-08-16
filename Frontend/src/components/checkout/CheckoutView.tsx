@@ -4,15 +4,14 @@ import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useMemo, useState } from 'react'
+import { useCallback, useState, useSyncExternalStore } from 'react'
 
 import { QuantityStepper } from '@/components/cart/QuantityStepper'
 import { useCartLine } from '@/components/cart/useCartLine'
 import { CloseIcon } from '@/components/icons'
-import { DHAKA_DISTRICT_ID, DISTRICTS, upazilasFor } from '@/data/bd-geo'
 import { firstImage, mediaURL } from '@/lib/payload'
 import { formatBDT } from '@/lib/price'
-import { SHIPPING_ZONES } from '@/lib/shipping'
+import { ZONE_STORAGE_KEY, zoneById } from '@/lib/shipping'
 import type { Product, Variant } from '@/lib/types'
 
 type Line = {
@@ -100,12 +99,10 @@ export function CheckoutView() {
 
   const [form, setForm] = useState({
     address: '',
-    districtId: '',
     email: '',
     name: '',
     note: '',
     phone: '',
-    upazila: '',
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
@@ -114,25 +111,32 @@ export function CheckoutView() {
   const lines = (cart?.items ?? []) as Line[]
   const subtotal = lines.reduce((total, line) => total + unitPrice(line) * line.quantity, 0)
 
-  const district = DISTRICTS.find((d) => String(d.id) === form.districtId)
-  const upazilas = useMemo(
-    () => (district ? upazilasFor(district.id) : []),
-    [district],
+  /**
+   * The zone is decided on the cart page and read back here.
+   *
+   * useSyncExternalStore rather than an effect: localStorage does not exist on
+   * the server, so the server snapshot returns null and renders the default,
+   * then the client swaps in the stored value without a hydration mismatch and
+   * without setting state from an effect.
+   */
+  const subscribe = useCallback((onChange: () => void) => {
+    window.addEventListener('storage', onChange)
+
+    return () => window.removeEventListener('storage', onChange)
+  }, [])
+
+  const storedZoneId = useSyncExternalStore(
+    subscribe,
+    () => window.localStorage.getItem(ZONE_STORAGE_KEY),
+    () => null,
   )
 
-  // Derived from the address, not chosen by the shopper — on the cart page the
-  // zone is a radio, which anyone could set to the cheaper option.
-  const zone = district
-    ? district.id === DHAKA_DISTRICT_ID
-      ? SHIPPING_ZONES[0]
-      : SHIPPING_ZONES[1]
-    : null
+  const zone = zoneById(storedZoneId)
 
-  const shipping = zone?.rate ?? 0
-  const total = subtotal + shipping
+  const total = subtotal + zone.rate
 
   const set = (key: keyof typeof form) => (value: string) =>
-    setForm((prev) => ({ ...prev, [key]: value, ...(key === 'districtId' ? { upazila: '' } : {}) }))
+    setForm((prev) => ({ ...prev, [key]: value }))
 
   const validate = () => {
     const next: Record<string, string> = {}
@@ -150,16 +154,10 @@ export function CheckoutView() {
       next.email = 'That email does not look right.'
     }
 
-    if (!form.districtId) {
-      next.districtId = 'Select a district.'
-    }
-
-    if (!form.upazila) {
-      next.upazila = 'Select an upazila or thana.'
-    }
-
-    if (form.address.trim().length < 8) {
-      next.address = 'Enter house, road and area.'
+    // Open-ended, so the only useful check is that it is long enough to be a
+    // real address rather than a word.
+    if (form.address.trim().length < 12) {
+      next.address = 'Enter your full address so the courier can find you.'
     }
 
     setErrors(next)
@@ -177,14 +175,14 @@ export function CheckoutView() {
 
     const phone = form.phone.replace(/[\s-]/g, '')
 
+    // Steadfast takes a single free-text address, so the whole thing goes on
+    // line one rather than being split into fields we no longer collect.
     const address = {
       addressLine1: form.address.trim(),
-      addressLine2: [form.upazila, district?.name].filter(Boolean).join(', '),
-      city: district?.name ?? '',
+      city: zone.label,
       country: 'BD',
       firstName: form.name.trim(),
       phone,
-      state: form.upazila,
     }
 
     try {
@@ -289,7 +287,7 @@ export function CheckoutView() {
               />,
             )}
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               {field(
                 'email',
                 'Email (optional)',
@@ -319,56 +317,15 @@ export function CheckoutView() {
               )}
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              {field(
-                'districtId',
-                'District',
-                <select
-                  className={`${FIELD} mt-1.5`}
-                  id="districtId"
-                  onChange={(e) => set('districtId')(e.target.value)}
-                  value={form.districtId}
-                >
-                  <option value="">Select district</option>
-                  {DISTRICTS.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name}
-                    </option>
-                  ))}
-                </select>,
-              )}
-
-              {field(
-                'upazila',
-                'Upazila / Thana',
-                <select
-                  className={`${FIELD} mt-1.5 disabled:opacity-50`}
-                  disabled={!district}
-                  id="upazila"
-                  onChange={(e) => set('upazila')(e.target.value)}
-                  value={form.upazila}
-                >
-                  <option value="">
-                    {district ? 'Select upazila / thana' : 'Select a district first'}
-                  </option>
-                  {upazilas.map((u) => (
-                    <option key={u.name} value={u.name}>
-                      {u.name}
-                    </option>
-                  ))}
-                </select>,
-              )}
-            </div>
-
             {field(
               'address',
               'Address',
               <textarea
                 autoComplete="street-address"
-                className={`${FIELD} mt-1.5 h-20 resize-none py-2.5`}
+                className={`${FIELD} mt-1.5 h-24 resize-none py-2.5 leading-relaxed`}
                 id="address"
                 onChange={(e) => set('address')(e.target.value)}
-                placeholder="House, road, area"
+                placeholder="Enter your full address, e.g., House no, Road no, Area, Thana, City."
                 value={form.address}
               />,
             )}
@@ -409,14 +366,8 @@ export function CheckoutView() {
               <div className="flex items-center justify-between border-b border-line py-3">
                 <dt className="font-medium">Shipment</dt>
                 <dd className="text-right">
-                  {zone && district ? (
-                    <>
-                      <span className="text-muted">{district.name}: </span>
-                      <span className="font-medium">{formatBDT(zone.rate)}</span>
-                    </>
-                  ) : (
-                    <span className="text-faint">Select a district</span>
-                  )}
+                  <span className="text-muted">{zone.label}: </span>
+                  <span className="font-medium">{formatBDT(zone.rate)}</span>
                 </dd>
               </div>
 

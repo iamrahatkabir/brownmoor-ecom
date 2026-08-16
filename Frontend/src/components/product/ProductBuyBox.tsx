@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { QuantityStepper } from '@/components/cart/QuantityStepper'
@@ -16,6 +17,7 @@ const resolveVariants = (product: Product): Variant[] =>
     .sort((a, b) => (a.priceInBDT ?? 0) - (b.priceInBDT ?? 0))
 
 export function ProductBuyBox({ product }: { product: Product }) {
+  const router = useRouter()
   const variants = useMemo(() => resolveVariants(product), [product])
   const hasVariants = Boolean(product.enableVariants && variants.length > 0)
 
@@ -148,13 +150,21 @@ export function ProductBuyBox({ product }: { product: Product }) {
 
           {/* Hidden once the item is in the cart: at that point the basket is
               the natural next step, and two competing CTAs muddle it. */}
+          {/* Adds, then sends the shopper to the cart — the delivery zone is
+              chosen there, so skipping straight to checkout would leave the
+              order with no shipping decision. */}
           {!inCart && !soldOut && (
-            <a
-              className="flex h-12 w-full items-center justify-center rounded-lg border border-ink text-[11px] tracked text-ink transition-colors hover:bg-ink hover:text-paper"
-              href="/checkout"
+            <button
+              className="flex h-12 w-full items-center justify-center rounded-lg border border-ink text-[11px] tracked text-ink transition-colors hover:bg-ink hover:text-paper disabled:opacity-60"
+              disabled={isPending}
+              onClick={async () => {
+                await add()
+                router.push('/cart')
+              }}
+              type="button"
             >
               Buy now
-            </a>
+            </button>
           )}
         </div>
 

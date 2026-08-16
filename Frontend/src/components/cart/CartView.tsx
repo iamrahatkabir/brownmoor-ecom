@@ -3,12 +3,12 @@
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { CloseIcon } from '@/components/icons'
 import { firstImage, mediaURL } from '@/lib/payload'
 import { formatBDT } from '@/lib/price'
-import { DEFAULT_ZONE, SHIPPING_ZONES } from '@/lib/shipping'
+import { DEFAULT_ZONE, SHIPPING_ZONES, ZONE_STORAGE_KEY } from '@/lib/shipping'
 import type { Product, Variant } from '@/lib/types'
 
 import { QuantityStepper } from './QuantityStepper'
@@ -144,6 +144,12 @@ function CartRow({ line }: { line: Line }) {
 export function CartView() {
   const { cart } = useCart()
   const [zoneId, setZoneId] = useState(DEFAULT_ZONE.id)
+
+  // Checkout no longer asks for a district, so the choice made here is the one
+  // that decides the delivery charge. Persist it so the next page agrees.
+  useEffect(() => {
+    window.localStorage.setItem(ZONE_STORAGE_KEY, zoneId)
+  }, [zoneId])
 
   const lines = (cart?.items ?? []) as Line[]
   const zone = SHIPPING_ZONES.find((z) => z.id === zoneId) ?? DEFAULT_ZONE

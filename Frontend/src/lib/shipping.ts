@@ -21,3 +21,9 @@ export const SHIPPING_ZONES: ShippingZone[] = [
 ]
 
 export const DEFAULT_ZONE = SHIPPING_ZONES[0]
+
+/** Where the cart stores the shopper's choice so checkout can read it back. */
+export const ZONE_STORAGE_KEY = 'brownmoor-shipping-zone'
+
+export const zoneById = (id: null | string): ShippingZone =>
+  SHIPPING_ZONES.find((zone) => zone.id === id) ?? DEFAULT_ZONE
