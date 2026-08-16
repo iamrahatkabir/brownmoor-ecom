@@ -80,7 +80,7 @@ export const VARIANT_TYPES = [
   { label: 'Capacity', name: 'capacity', options: ['3 litre', '5 litre', '7 litre'] },
 ]
 
-export const PRODUCTS: ProductSpec[] = [
+const CORE_PRODUCTS: ProductSpec[] = [
   {
     care: 'Dishwasher safe, though hand washing keeps the exterior brighter.',
     categories: ['cookware', 'saucepans'],
@@ -350,6 +350,63 @@ export const PRODUCTS: ProductSpec[] = [
     title: 'Airtight Glass Container Set',
   },
 ]
+
+/**
+ * Bulk bakeware, generated rather than written out.
+ *
+ * Its only purpose is to push the Bakeware listing past one page so pagination
+ * can be seen working. Generated so 45 near-identical products do not bury the
+ * hand-written catalogue above, and folded into PRODUCTS so `seed:clear`
+ * removes them with everything else.
+ */
+const FILLER_SHAPES = [
+  'Baking Tray',
+  'Muffin Tin',
+  'Cake Ring',
+  'Pie Dish',
+  'Tart Tin',
+  'Loaf Pan',
+  'Cooling Rack',
+  'Bundt Tin',
+  'Brownie Tin',
+  'Cookie Sheet',
+  'Madeleine Tray',
+  'Flan Ring',
+  'Baking Stone',
+  'Pastry Board',
+  'Springform Pan',
+]
+
+const FILLER_COLOURS = ['#4a4a52', '#585048', '#6b5b73', '#5f6b70', '#40352c', '#3f4b3b']
+
+const BAKEWARE_FILLER: ProductSpec[] = Array.from({ length: 45 }, (_, index) => {
+  const n = index + 1
+  const shape = FILLER_SHAPES[index % FILLER_SHAPES.length]
+  const price = 700 + index * 55
+  // Every third one is discounted, and every seventh is out of stock, so the
+  // listing shows badges and sold-out states rather than 45 identical cards.
+  const onSale = index % 3 === 0
+  const outOfStock = index % 7 === 6
+
+  return {
+    categories: ['bakeware', 'tins-and-trays'],
+    colour: FILLER_COLOURS[index % FILLER_COLOURS.length],
+    compareAt: onSale ? Math.round(price * 1.2) : null,
+    price,
+    shortDescription: `${shape} for everyday baking, part of the core range.`,
+    slug: `bakeware-${String(n).padStart(2, '0')}`,
+    specs: [
+      { label: 'Material', value: 'Carbon steel' },
+      { label: 'Reference', value: `BM-${String(n).padStart(3, '0')}` },
+    ],
+    stock: outOfStock ? 0 : 12 + index,
+    title: `${shape} No. ${n}`,
+    weight: 300 + index * 10,
+  }
+})
+
+/** Everything the seed installs: the written catalogue plus the filler. */
+export const PRODUCTS: ProductSpec[] = [...CORE_PRODUCTS, ...BAKEWARE_FILLER]
 
 /** Copy for the editable home-page global, so the demo homepage reads properly. */
 export const HOME_PAGE = {
