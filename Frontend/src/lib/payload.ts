@@ -143,6 +143,60 @@ export async function getProducts({
   return ids.map((id) => byId.get(id)).filter((doc): doc is Product => Boolean(doc))
 }
 
+/** How many products fill one listing page. */
+export const PAGE_SIZE = 20
+
+export type ProductPage = {
+  page: number
+  products: Product[]
+  totalDocs: number
+  totalPages: number
+}
+
+/**
+ * A page of products for a listing.
+ *
+ * Filtering by a parent category also returns its children's products, because
+ * the seed assigns a product to both — browsing Cookware should not come back
+ * empty just because everything sits under Saucepans.
+ */
+export async function getProductsPage({
+  categorySlug,
+  page = 1,
+}: {
+  categorySlug?: string
+  page?: number
+}): Promise<ProductPage> {
+  const params = new URLSearchParams({
+    depth: '2',
+    limit: String(PAGE_SIZE),
+    page: String(Math.max(1, page)),
+    sort: '-createdAt',
+  })
+
+  if (categorySlug) {
+    params.set('where[categories.slug][equals]', categorySlug)
+  }
+
+  const result = await api<Paginated<Product>>(`/api/products?${params.toString()}`)
+
+  return {
+    page: result?.page ?? 1,
+    products: result?.docs ?? [],
+    totalDocs: result?.totalDocs ?? 0,
+    totalPages: result?.totalPages ?? 1,
+  }
+}
+
+export async function getCategoryBySlug(slug: string): Promise<Category | null> {
+  const params = new URLSearchParams({ depth: '0', limit: '1' })
+  params.set('where[slug][equals]', slug)
+
+  const result = await api<Paginated<Category>>(`/api/categories?${params.toString()}`)
+
+  return result?.docs?.[0] ?? null
+}
+
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const params = new URLSearchParams({ depth: '2', limit: '1' })
   params.set('where[slug][equals]', slug)

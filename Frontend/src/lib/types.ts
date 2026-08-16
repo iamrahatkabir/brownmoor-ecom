@@ -78,5 +78,9 @@ export type HomePageGlobal = {
 
 export type Paginated<T> = {
   docs: T[]
+  hasNextPage?: boolean
+  hasPrevPage?: boolean
+  page?: number
   totalDocs: number
+  totalPages?: number
 }
