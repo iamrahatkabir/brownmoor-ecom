@@ -394,19 +394,16 @@ export function CheckoutView() {
           )}
 
           <button
-            className="mt-5 h-12 w-full rounded-lg bg-ink text-[11px] tracked text-paper transition-colors hover:bg-muted disabled:opacity-60"
+            className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-ink text-[11px] tracked text-paper transition-colors hover:bg-muted disabled:opacity-60"
             disabled={submitting}
             onClick={placeOrder}
             type="button"
           >
-            {submitting ? (
-              <span className="flex items-center gap-2">
-                <Spinner className="h-4 w-4" />
-                Placing order…
-              </span>
-            ) : (
-              'Place order'
-            )}
+            {/* The button is the flex container, so the spinner and label sit
+                centred together. A flex wrapper inside a text-centred button
+                stretches full width and pushes both to the left. */}
+            {submitting && <Spinner className="h-4 w-4" />}
+            {submitting ? 'Placing order…' : 'Place order'}
           </button>
         </aside>
       </div>
