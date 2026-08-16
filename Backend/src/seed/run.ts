@@ -57,7 +57,7 @@ const uploadImage = async (
 
 const findOne = async (
   payload: Payload,
-  collection: 'categories' | 'products' | 'variantOptions' | 'variantTypes',
+  collection: 'categories' | 'products' | 'variantOptions' | 'variants' | 'variantTypes',
   where: Record<string, unknown>,
 ) => {
   const { docs } = await payload.find({ collection, depth: 0, limit: 1, where: where as never })
@@ -130,63 +130,85 @@ const seed = async (payload: Payload): Promise<void> => {
 
   // ------------------------------------------------------------------ products
   let created = 0
+  let variantsCreated = 0
 
   for (const spec of PRODUCTS) {
-    if (await findOne(payload, 'products', { slug: { equals: spec.slug } })) {
+    const hasVariants = Boolean(spec.variants?.length && spec.variantType)
+    let product = await findOne(payload, 'products', { slug: { equals: spec.slug } })
+
+    if (!product) {
+      const image = await uploadImage(payload, spec.slug, spec.title, spec.colour)
+
+      product = await payload.create({
+        collection: 'products',
+        data: {
+          _status: 'published',
+          ...(spec.care ? { careInstructions: spec.care } : {}),
+          categories: spec.categories.map((slug) => categoryIds[slug]).filter(Boolean),
+          featured: Boolean(spec.featured),
+          gallery: [{ image: image.id }],
+          shortDescription: spec.shortDescription,
+          slug: spec.slug,
+          specifications: spec.specs,
+          title: spec.title,
+          ...(hasVariants
+            ? { enableVariants: true, variantTypes: [typeIds[spec.variantType!]] }
+            : {
+                inventory: spec.stock ?? 0,
+                priceInBDT: taka(spec.price ?? 0),
+                priceInBDTEnabled: true,
+                ...(spec.compareAt ? { compareAtPriceInBDT: taka(spec.compareAt) } : {}),
+                ...(spec.weight ? { weightGrams: spec.weight } : {}),
+              }),
+        },
+      })
+
+      created += 1
+      payload.logger.info(`  product: ${spec.title}`)
+    }
+
+    // Outside the block above on purpose. Creating variants only when the
+    // product is new meant that a run interrupted between the two left the
+    // product permanently variant-less — it looks sold out, and no later run
+    // would ever repair it because the product now "exists".
+    if (!hasVariants) {
       continue
     }
 
-    const image = await uploadImage(payload, spec.slug, spec.title, spec.colour)
-    const hasVariants = Boolean(spec.variants?.length && spec.variantType)
+    for (const variant of spec.variants!) {
+      const optionId = optionIds[spec.variantType!][variant.option]
 
-    const product = await payload.create({
-      collection: 'products',
-      data: {
-        _status: 'published',
-        ...(spec.care ? { careInstructions: spec.care } : {}),
-        categories: spec.categories.map((slug) => categoryIds[slug]).filter(Boolean),
-        featured: Boolean(spec.featured),
-        gallery: [{ image: image.id }],
-        shortDescription: spec.shortDescription,
-        slug: spec.slug,
-        specifications: spec.specs,
-        title: spec.title,
-        ...(hasVariants
-          ? { enableVariants: true, variantTypes: [typeIds[spec.variantType!]] }
-          : {
-              inventory: spec.stock ?? 0,
-              priceInBDT: taka(spec.price ?? 0),
-              priceInBDTEnabled: true,
-              ...(spec.compareAt ? { compareAtPriceInBDT: taka(spec.compareAt) } : {}),
-              ...(spec.weight ? { weightGrams: spec.weight } : {}),
-            }),
-      },
-    })
+      const existing = await findOne(payload, 'variants', {
+        and: [{ product: { equals: product.id } }, { options: { in: [optionId] } }],
+      })
 
-    if (hasVariants) {
-      for (const variant of spec.variants!) {
-        await payload.create({
-          collection: 'variants',
-          data: {
-            _status: 'published',
-            inventory: variant.stock,
-            options: [optionIds[spec.variantType!][variant.option]],
-            priceInBDT: taka(variant.price),
-            priceInBDTEnabled: true,
-            product: product.id,
-            title: `${spec.title} — ${variant.option}`,
-            weightGrams: variant.weight,
-            ...(variant.compareAt ? { compareAtPriceInBDT: taka(variant.compareAt) } : {}),
-          },
-        })
+      if (existing) {
+        continue
       }
-    }
 
-    created += 1
-    payload.logger.info(`  product: ${spec.title}`)
+      await payload.create({
+        collection: 'variants',
+        data: {
+          _status: 'published',
+          inventory: variant.stock,
+          options: [optionId],
+          priceInBDT: taka(variant.price),
+          priceInBDTEnabled: true,
+          product: product.id,
+          title: `${spec.title} — ${variant.option}`,
+          weightGrams: variant.weight,
+          ...(variant.compareAt ? { compareAtPriceInBDT: taka(variant.compareAt) } : {}),
+        },
+      })
+
+      variantsCreated += 1
+      payload.logger.info(`    variant: ${spec.title} — ${variant.option}`)
+    }
   }
 
-  payload.logger.info(`  products created: ${created} (${PRODUCTS.length - created} already present)`)
+  payload.logger.info(
+    `  products created: ${created} (${PRODUCTS.length - created} already present), variants created: ${variantsCreated}`,
+  )
 
   // ----------------------------------------------------------------- home page
   // Hero and sections are guarded separately. Sharing one condition meant that

@@ -8,6 +8,11 @@ export const CONTACT = {
     label: 'Brownmoor.com',
     url: 'https://www.facebook.com/brownmoorbangladesh/',
   },
+  instagram: {
+    /** The handle, since that is how Instagram accounts are referred to. */
+    label: '@brownmoorbd',
+    url: 'https://www.instagram.com/brownmoorbd/',
+  },
   hotline: {
     /** Formatted to match the WhatsApp number so the two read as a pair. */
     display: '+880 1318-519586',

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { CONTACT } from '@/lib/contact'
 import type { CategoryTree } from '@/lib/types'
 
-import { FacebookIcon, PhoneIcon, WhatsAppIcon } from './icons'
+import { FacebookIcon, InstagramIcon, PhoneIcon, WhatsAppIcon } from './icons'
 
 /**
  * Footer. Shop column is generated from the live category tree, so it can't
@@ -99,6 +99,17 @@ export function Footer({ categories }: { categories: CategoryTree[] }) {
                 >
                   <FacebookIcon className="h-4 w-4 shrink-0" />
                   <span>{CONTACT.facebook.label}</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  className="flex items-center gap-2 hover:text-paper"
+                  href={CONTACT.instagram.url}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <InstagramIcon className="h-4 w-4 shrink-0" />
+                  <span>{CONTACT.instagram.label}</span>
                 </a>
               </li>
               <li className="pt-2 text-paper/60">Dhaka, Bangladesh</li>
