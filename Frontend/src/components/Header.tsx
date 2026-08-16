@@ -1,11 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { CONTACT } from '@/lib/contact'
 import type { CategoryTree } from '@/lib/types'
 
 import { CategoryNav } from './CategoryNav'
 import { MobileNav } from './MobileNav'
-import { CartIcon, SearchIcon, UserIcon } from './icons'
+import { CartIcon, FacebookIcon, SearchIcon, UserIcon, WhatsAppIcon } from './icons'
 
 /**
  * Three stacked bars, matching the reference layout:
@@ -23,12 +24,28 @@ export function Header({ categories }: { categories: CategoryTree[] }) {
       {/* Utility strip — desktop only. */}
       <div className="hidden bg-ink text-paper md:block">
         <div className="mx-auto flex h-9 max-w-[1280px] items-center justify-between px-4 text-[11px]">
-          <div className="flex items-center gap-5">
-            <a className="hover:text-faint" href="tel:+8801000000000">
-              +880 1000-000000
+          <div className="flex items-center gap-6">
+            {/* Icon and number are one link, so clicking either opens WhatsApp. */}
+            <a
+              className="flex items-center gap-2 hover:text-faint"
+              href={CONTACT.whatsapp.url}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <WhatsAppIcon className="h-3.5 w-3.5" />
+              <span>{CONTACT.whatsapp.display}</span>
+              <span className="sr-only">— chat on WhatsApp</span>
             </a>
-            <a className="hover:text-faint" href="mailto:hello@brownmoor.com">
-              hello@brownmoor.com
+
+            <a
+              className="flex items-center gap-2 hover:text-faint"
+              href={CONTACT.facebook.url}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <FacebookIcon className="h-3.5 w-3.5" />
+              <span>{CONTACT.facebook.label}</span>
+              <span className="sr-only">— visit us on Facebook</span>
             </a>
           </div>
           <nav className="flex items-center gap-5 tracked">

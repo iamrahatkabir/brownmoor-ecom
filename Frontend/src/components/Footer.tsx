@@ -1,7 +1,10 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { CONTACT } from '@/lib/contact'
 import type { CategoryTree } from '@/lib/types'
+
+import { FacebookIcon, WhatsAppIcon } from './icons'
 
 /**
  * Footer. Shop column is generated from the live category tree, so it can't
@@ -65,14 +68,28 @@ export function Footer({ categories }: { categories: CategoryTree[] }) {
           <div>
             <h2 className="text-[11px] tracked text-paper/50">Get in touch</h2>
             <ul className="mt-4 space-y-2.5 text-sm text-paper/80">
+              {/* Repeated from the top bar, which is desktop-only — on a phone
+                  this is the only place these links appear. */}
               <li>
-                <a className="hover:text-paper" href="tel:+8801000000000">
-                  +880 1000-000000
+                <a
+                  className="flex items-center gap-2 hover:text-paper"
+                  href={CONTACT.whatsapp.url}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <WhatsAppIcon className="h-4 w-4 shrink-0" />
+                  <span>{CONTACT.whatsapp.display}</span>
                 </a>
               </li>
               <li>
-                <a className="hover:text-paper" href="mailto:hello@brownmoor.com">
-                  hello@brownmoor.com
+                <a
+                  className="flex items-center gap-2 hover:text-paper"
+                  href={CONTACT.facebook.url}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <FacebookIcon className="h-4 w-4 shrink-0" />
+                  <span>{CONTACT.facebook.label}</span>
                 </a>
               </li>
               <li className="pt-2 text-paper/60">Dhaka, Bangladesh</li>
