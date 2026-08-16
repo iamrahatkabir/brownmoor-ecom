@@ -23,7 +23,15 @@ type Suggestion = {
   title: string
 }
 
-export function SearchBar({ className = '' }: { className?: string }) {
+export function SearchBar({
+  autoFocus = false,
+  className = '',
+  onNavigate,
+}: {
+  autoFocus?: boolean
+  className?: string
+  onNavigate?: () => void
+}) {
   const router = useRouter()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<Suggestion[]>([])
@@ -91,6 +99,7 @@ export function SearchBar({ className = '' }: { className?: string }) {
 
     if (query.trim().length >= MIN_QUERY) {
       setOpen(false)
+      onNavigate?.()
       router.push(`/search?q=${encodeURIComponent(query.trim())}`)
     }
   }
@@ -107,6 +116,7 @@ export function SearchBar({ className = '' }: { className?: string }) {
         <div className="flex h-11 items-center rounded-lg border border-line bg-paper focus-within:border-ink">
           <input
             aria-label="Search products"
+            autoFocus={autoFocus}
             className="h-full w-full bg-transparent px-4 text-sm outline-none placeholder:text-faint"
             onChange={(event) => {
               setQuery(event.target.value)
@@ -141,7 +151,10 @@ export function SearchBar({ className = '' }: { className?: string }) {
                     <Link
                       className="flex items-center gap-3 px-3 py-2.5 transition-colors hover:bg-wash"
                       href={item.href}
-                      onClick={() => setOpen(false)}
+                      onClick={() => {
+                        setOpen(false)
+                        onNavigate?.()
+                      }}
                     >
                       <span className="h-11 w-11 shrink-0 overflow-hidden rounded-lg border border-line bg-wash">
                         {item.image && (

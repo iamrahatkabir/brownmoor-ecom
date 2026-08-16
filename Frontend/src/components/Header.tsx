@@ -4,12 +4,13 @@ import Link from 'next/link'
 import { CONTACT } from '@/lib/contact'
 import type { CategoryTree } from '@/lib/types'
 
+import { MobileSearch } from './MobileSearch'
 import { SearchBar } from './SearchBar'
 
 import { CartCount } from './CartCount'
 import { CategoryNav } from './CategoryNav'
 import { MobileNav } from './MobileNav'
-import { CartIcon, FacebookIcon, SearchIcon, WhatsAppIcon } from './icons'
+import { CartIcon, FacebookIcon, WhatsAppIcon } from './icons'
 
 /**
  * Three stacked bars, matching the reference layout:
@@ -61,7 +62,7 @@ export function Header({ categories }: { categories: CategoryTree[] }) {
       </div>
 
       {/* Main bar. */}
-      <div className="border-b border-line">
+      <div className="relative border-b border-line">
         <div className="mx-auto flex h-16 max-w-[1280px] items-center gap-3 px-4 md:h-20 md:gap-8">
           <MobileNav categories={categories} />
 
@@ -83,13 +84,7 @@ export function Header({ categories }: { categories: CategoryTree[] }) {
           <SearchBar className="hidden flex-1 justify-center md:block" />
 
           <div className="ml-auto flex items-center gap-1 md:ml-0 md:gap-4">
-            <Link
-              aria-label="Search"
-              className="flex h-10 w-10 items-center justify-center text-ink md:hidden"
-              href="/search"
-            >
-              <SearchIcon />
-            </Link>
+            <MobileSearch />
 
             <Link
               aria-label="Cart"
