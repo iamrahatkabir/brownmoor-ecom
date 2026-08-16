@@ -1,0 +1,30 @@
+# Root-level ignores. Backend/ and Frontend/ each keep their own .gitignore
+# for app-specific build output; those still apply under this repo.
+
+# macOS
+.DS_Store
+
+# Secrets — never commit. `.env.example` files are tracked on purpose as
+# documentation of which variables are required.
+.env
+.env.*
+!.env.example
+
+# dependencies
+node_modules/
+
+# build output
+.next/
+out/
+build/
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# vercel
+.vercel
+
+# editor
+.idea/
+*.swp
