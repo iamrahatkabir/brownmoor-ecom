@@ -45,7 +45,6 @@ export default async function ProductPage({ params }: Params) {
   const related = await getRelatedProducts(product)
   const category = primaryCategory(product)
   const images = galleryImages(product)
-  const specs = (product.specifications ?? []).slice(0, 2)
 
   return (
     <>
@@ -86,22 +85,6 @@ export default async function ProductPage({ params }: Params) {
 
             {product.shortDescription && (
               <p className="mt-4 text-sm leading-relaxed text-muted">{product.shortDescription}</p>
-            )}
-
-            {/* The two specs a buyer compares first, lifted out of the tab so
-                they are visible without scrolling. */}
-            {specs.length > 0 && (
-              <dl className="mt-6 grid grid-cols-2 border border-line">
-                {specs.map((spec, index) => (
-                  <div
-                    className={`p-4 ${index === 0 && specs.length > 1 ? 'border-r border-line' : ''}`}
-                    key={spec.id ?? index}
-                  >
-                    <dt className="text-[11px] text-faint">{spec.label}</dt>
-                    <dd className="mt-1 text-sm font-medium text-ink">{spec.value}</dd>
-                  </div>
-                ))}
-              </dl>
             )}
 
             <ProductBuyBox product={product} />
