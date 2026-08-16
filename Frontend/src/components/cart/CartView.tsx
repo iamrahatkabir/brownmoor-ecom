@@ -187,13 +187,6 @@ export function CartView() {
           {lines.map((line, index) => (
             <CartRow key={line.id ?? index} line={line} />
           ))}
-
-          <Link
-            className="mt-6 inline-flex text-[11px] tracked text-muted hover:text-ink"
-            href="/"
-          >
-            ← Continue shopping
-          </Link>
         </div>
 
         <aside className="h-fit rounded-lg border border-line p-5 md:p-6">
