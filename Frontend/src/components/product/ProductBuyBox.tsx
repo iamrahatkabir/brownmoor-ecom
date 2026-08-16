@@ -46,6 +46,16 @@ export function ProductBuyBox({ product }: { product: Product }) {
     hasVariants ? variantId : undefined,
   )
 
+  /**
+   * Which button is mid-request.
+   *
+   * `isPending` from the hook is per cart line, not per control — add to cart
+   * and buy now both call `add()`, so both would spin whichever was pressed.
+   * This records the actual button so only it shows a spinner, while both stay
+   * disabled to prevent a second add landing on top of the first.
+   */
+  const [busy, setBusy] = useState<'add' | 'buy' | null>(null)
+
   // Reveals the sticky bar only once the real buttons have scrolled away, so
   // the two are never on screen competing with each other.
   const anchorRef = useRef<HTMLDivElement>(null)
@@ -82,10 +92,23 @@ export function ProductBuyBox({ product }: { product: Product }) {
     <button
       className="h-12 w-full rounded-lg bg-ink text-[11px] tracked text-paper transition-colors hover:bg-muted disabled:bg-wash disabled:text-faint"
       disabled={soldOut || isPending}
-      onClick={() => add()}
+      onClick={async () => {
+        setBusy('add')
+        try {
+          await add()
+        } finally {
+          setBusy(null)
+        }
+      }}
       type="button"
     >
-      {isPending ? <Spinner className="mx-auto h-4 w-4" /> : soldOut ? 'Sold out' : 'Add to cart'}
+      {busy === 'add' ? (
+        <Spinner className="mx-auto h-4 w-4" />
+      ) : soldOut ? (
+        'Sold out'
+      ) : (
+        'Add to cart'
+      )}
     </button>
   )
 
@@ -160,12 +183,15 @@ export function ProductBuyBox({ product }: { product: Product }) {
               className="flex h-12 w-full items-center justify-center rounded-lg border border-ink text-[11px] tracked text-ink transition-colors hover:bg-ink hover:text-paper disabled:opacity-60"
               disabled={isPending}
               onClick={async () => {
+                setBusy('buy')
                 await add()
+                // Left set on purpose: the spinner stays until the cart page
+                // takes over, rather than flicking back to the label first.
                 router.push('/cart')
               }}
               type="button"
             >
-              {isPending ? <Spinner className="h-4 w-4" /> : 'Buy now'}
+              {busy === 'buy' ? <Spinner className="h-4 w-4" /> : 'Buy now'}
             </button>
           )}
         </div>
