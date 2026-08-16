@@ -503,6 +503,18 @@ export interface Order {
    * Parcel weight for the courier docket.
    */
   totalWeightGrams?: number | null;
+  /**
+   * From the delivery address.
+   */
+  customerPhone?: string | null;
+  /**
+   * From the delivery address.
+   */
+  deliveryAddress?: string | null;
+  /**
+   * Amount to collect on delivery.
+   */
+  orderTotal?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -925,6 +937,9 @@ export interface OrdersSelect<T extends boolean = true> {
   shippingAmount?: T;
   shippingZone?: T;
   totalWeightGrams?: T;
+  customerPhone?: T;
+  deliveryAddress?: T;
+  orderTotal?: T;
   updatedAt?: T;
   createdAt?: T;
 }

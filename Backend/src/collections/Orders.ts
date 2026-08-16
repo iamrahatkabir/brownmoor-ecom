@@ -15,6 +15,13 @@ import { BDT, currenciesConfig } from '../currencies'
  */
 export const ordersCollectionOverride: CollectionOverride = ({ defaultCollection }) => ({
   ...defaultCollection,
+  admin: {
+    ...defaultCollection.admin,
+    // Staff work this list to pack and dispatch, so the useful columns are who
+    // to call, where it goes and what to collect. The plugin's default shows
+    // none of those.
+    defaultColumns: ['id', 'customerPhone', 'deliveryAddress', 'orderTotal', 'status', 'createdAt'],
+  },
   fields: [
     ...defaultCollection.fields,
     amountField({
@@ -45,6 +52,49 @@ export const ordersCollectionOverride: CollectionOverride = ({ defaultCollection
         readOnly: true,
       },
       label: 'Parcel weight (g)',
+    },
+    /*
+     * List columns, read off the shipping address rather than stored again, so
+     * they cannot drift from it and no migration is needed.
+     */
+    {
+      name: 'customerPhone',
+      type: 'text',
+      admin: { description: 'From the delivery address.', readOnly: true },
+      hooks: { afterRead: [({ data }) => data?.shippingAddress?.phone ?? null] },
+      label: 'Mobile',
+      virtual: true,
+    },
+    {
+      name: 'deliveryAddress',
+      type: 'text',
+      admin: { description: 'From the delivery address.', readOnly: true },
+      hooks: {
+        afterRead: [
+          ({ data }) =>
+            [data?.shippingAddress?.addressLine1, data?.shippingAddress?.addressLine2]
+              .filter(Boolean)
+              .join(', ') || null,
+        ],
+      },
+      label: 'Address',
+      virtual: true,
+    },
+    {
+      name: 'orderTotal',
+      type: 'text',
+      admin: { description: 'Amount to collect on delivery.', readOnly: true },
+      hooks: {
+        afterRead: [
+          ({ data }) =>
+            // Stored in poisha; staff read taka.
+            typeof data?.amount === 'number'
+              ? `৳${(data.amount / 100).toLocaleString('en-BD')}`
+              : null,
+        ],
+      },
+      label: 'Total',
+      virtual: true,
     },
   ],
 })

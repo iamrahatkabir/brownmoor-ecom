@@ -90,7 +90,7 @@ function OrderLine({ line }: { line: Line }) {
 }
 
 export function CheckoutView() {
-  const { cart } = useCart()
+  const { cart, clearCart } = useCart()
   const router = useRouter()
 
   // useCart does not surface the id; useEcommerce does, but the cart document
@@ -179,7 +179,11 @@ export function CheckoutView() {
     // line one rather than being split into fields we no longer collect.
     const address = {
       addressLine1: form.address.trim(),
-      city: zone.label,
+      // The backend re-derives the zone by matching this against each zone's
+      // city list, so it must be a city name, not the zone's label — sending
+      // "Inside Dhaka" matches nothing and silently falls through to the
+      // outside-Dhaka rate.
+      city: zone.id === 'inside-dhaka' ? 'Dhaka' : zone.label,
       country: 'BD',
       firstName: form.name.trim(),
       phone,
@@ -235,6 +239,11 @@ export function CheckoutView() {
       if (!confirm.ok || !done?.orderID) {
         throw new Error(done?.message || 'Could not confirm the order.')
       }
+
+      // The order owns its own snapshot of the items, so emptying the cart
+      // cannot affect it — and leaving it full would show the shopper a basket
+      // they have already paid for.
+      await clearCart()
 
       router.push(`/order/${done.orderID}`)
     } catch (error) {
