@@ -48,17 +48,12 @@ export function Header({ categories }: { categories: CategoryTree[] }) {
               <span className="sr-only">— visit us on Facebook</span>
             </a>
           </div>
-          <nav className="flex items-center gap-5 tracked">
-            <Link className="hover:text-faint" href="/about">
-              About
-            </Link>
-            <Link className="hover:text-faint" href="/contact">
-              Contact
-            </Link>
-            <Link className="hover:text-faint" href="/privacy">
-              Privacy
-            </Link>
-          </nav>
+          {/* `tel:` opens the dialer on a phone. On desktop it hands off to
+              whatever the OS has registered, or does nothing — harmless. */}
+          <a className="flex items-center gap-1.5 hover:text-faint" href={CONTACT.hotline.url}>
+            <span className="tracked">Hotline:</span>
+            <span>{CONTACT.hotline.display}</span>
+          </a>
         </div>
       </div>
 

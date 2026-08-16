@@ -8,6 +8,12 @@ export const CONTACT = {
     label: 'Brownmoor.com',
     url: 'https://www.facebook.com/brownmoorbangladesh/',
   },
+  hotline: {
+    /** Formatted to match the WhatsApp number so the two read as a pair. */
+    display: '+880 1318-519586',
+    /** `tel:` wants no spaces or dashes; the plus and country code are fine. */
+    url: 'tel:+8801318519586',
+  },
   whatsapp: {
     /**
      * Bangladeshi convention: country code, then the four-digit operator

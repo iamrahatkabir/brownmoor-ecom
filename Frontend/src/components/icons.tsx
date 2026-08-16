@@ -89,6 +89,24 @@ export function CloseIcon({ className = base }: IconProps) {
   )
 }
 
+export function PhoneIcon({ className = base }: IconProps) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M6.6 3.5h-2A1.6 1.6 0 0 0 3 5.2C3 13.4 10.6 21 18.8 21a1.6 1.6 0 0 0 1.7-1.6v-2a1.1 1.1 0 0 0-.86-1.07l-3.2-.71a1.1 1.1 0 0 0-1.14.44l-.86 1.2a12.6 12.6 0 0 1-5.74-5.74l1.2-.86a1.1 1.1 0 0 0 .44-1.14l-.71-3.2A1.1 1.1 0 0 0 6.6 3.5Z"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 /*
  * Brand marks below. Unlike the icons above these are filled rather than
  * stroked, because that is how each mark is actually drawn — outlining them

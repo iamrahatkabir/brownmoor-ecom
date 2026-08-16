@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { CONTACT } from '@/lib/contact'
 import type { CategoryTree } from '@/lib/types'
 
-import { FacebookIcon, WhatsAppIcon } from './icons'
+import { FacebookIcon, PhoneIcon, WhatsAppIcon } from './icons'
 
 /**
  * Footer. Shop column is generated from the live category tree, so it can't
@@ -70,6 +70,15 @@ export function Footer({ categories }: { categories: CategoryTree[] }) {
             <ul className="mt-4 space-y-2.5 text-sm text-paper/80">
               {/* Repeated from the top bar, which is desktop-only — on a phone
                   this is the only place these links appear. */}
+              <li>
+                <a
+                  className="flex items-center gap-2 hover:text-paper"
+                  href={CONTACT.hotline.url}
+                >
+                  <PhoneIcon className="h-4 w-4 shrink-0" />
+                  <span>{CONTACT.hotline.display}</span>
+                </a>
+              </li>
               <li>
                 <a
                   className="flex items-center gap-2 hover:text-paper"
