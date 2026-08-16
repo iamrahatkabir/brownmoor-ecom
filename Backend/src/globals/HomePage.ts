@@ -2,9 +2,6 @@ import type { GlobalConfig } from 'payload'
 
 import { isAdmin } from '../access'
 
-/** A homepage band can hold at most this many products before it stops being an edit. */
-const MAX_PRODUCTS_PER_SECTION = 8
-
 /** How many bands the homepage supports below the hero. */
 const MAX_SECTIONS = 5
 
@@ -112,15 +109,16 @@ export const HomePage: GlobalConfig = {
           name: 'products',
           type: 'relationship',
           admin: {
-            description: `Pick up to ${MAX_PRODUCTS_PER_SECTION} products and drag to reorder. The band is hidden if this is empty.`,
+            description:
+              'Pick any number of products and drag to reorder. The band is hidden if this is empty. The grid is four wide on desktop and two on mobile, so multiples of four fill the last row evenly.',
           },
           filterOptions: () => ({
             // A draft product would 404 for shoppers, so it should not be
             // offered as something to put on the homepage.
             _status: { equals: 'published' },
           }),
+          // No maxRows on purpose: staff decide how long a band should be.
           hasMany: true,
-          maxRows: MAX_PRODUCTS_PER_SECTION,
           relationTo: 'products',
         },
         {

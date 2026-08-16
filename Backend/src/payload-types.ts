@@ -1046,7 +1046,7 @@ export interface HomePage {
          */
         intro?: string | null;
         /**
-         * Pick up to 8 products and drag to reorder. The band is hidden if this is empty.
+         * Pick any number of products and drag to reorder. The band is hidden if this is empty. The grid is four wide on desktop and two on mobile, so multiples of four fill the last row evenly.
          */
         products?: (number | Product)[] | null;
         /**

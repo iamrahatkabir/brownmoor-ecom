@@ -57,7 +57,7 @@ export type HomeSection = {
   eyebrow?: string | null
   heading: string
   intro?: string | null
-  /** Hand-picked, in the order arranged in the admin panel. Capped at 8. */
+  /** Hand-picked, in the order arranged in the admin panel. No fixed limit. */
   products?: Array<Product | number> | null
   viewAllLabel?: string | null
   viewAllUrl?: string | null
