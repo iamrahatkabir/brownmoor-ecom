@@ -9,7 +9,6 @@ import { useCallback, useState, useSyncExternalStore } from 'react'
 import { Spinner } from '@/components/Spinner'
 import { QuantityStepper } from '@/components/cart/QuantityStepper'
 import { useCartLine } from '@/components/cart/useCartLine'
-import { CloseIcon } from '@/components/icons'
 import { firstImage, mediaURL } from '@/lib/payload'
 import { formatBDT } from '@/lib/price'
 import { ZONE_STORAGE_KEY, zoneById } from '@/lib/shipping'
@@ -41,7 +40,6 @@ function OrderLine({ line }: { line: Line }) {
   const product = asProduct(line.product)
   const variant = asVariant(line.variant)
   const { decrement, increment, isPending, quantity } = useCartLine(product?.id ?? 0, variant?.id)
-  const { removeItem } = useCart()
 
   if (!product) {
     return null
@@ -52,16 +50,6 @@ function OrderLine({ line }: { line: Line }) {
 
   return (
     <div className="flex items-start gap-3 border-b border-line py-4">
-      <button
-        aria-label={`Remove ${product.title}`}
-        className="mt-1 shrink-0 text-faint hover:text-ink"
-        disabled={isPending}
-        onClick={() => line.id && removeItem(line.id)}
-        type="button"
-      >
-        <CloseIcon className="h-3.5 w-3.5" />
-      </button>
-
       <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-line bg-wash">
         {src && (
           <Image alt="" className="h-full w-full object-cover" height={96} src={src} width={96} />
