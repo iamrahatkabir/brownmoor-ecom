@@ -21,6 +21,10 @@
   /* Reserved for genuinely urgent signals: sale badges, out-of-stock. */
   --color-sale: #c0392b;
 
+  /* Count badges. Brighter than --color-sale so a filled cart catches the eye
+     against the monochrome header. */
+  --color-notify: #fa3e3f;
+
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
