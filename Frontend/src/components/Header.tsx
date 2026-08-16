@@ -7,12 +7,12 @@ import type { CategoryTree } from '@/lib/types'
 import { CartCount } from './CartCount'
 import { CategoryNav } from './CategoryNav'
 import { MobileNav } from './MobileNav'
-import { CartIcon, FacebookIcon, SearchIcon, UserIcon, WhatsAppIcon } from './icons'
+import { CartIcon, FacebookIcon, SearchIcon, WhatsAppIcon } from './icons'
 
 /**
  * Three stacked bars, matching the reference layout:
  *   1. utility strip (contact details, secondary links)
- *   2. main bar (logo, search, account, cart)
+ *   2. main bar (logo, search, cart)
  *   3. category navigation
  *
  * On mobile the utility strip and the category bar both collapse — contact
@@ -102,14 +102,6 @@ export function Header({ categories }: { categories: CategoryTree[] }) {
               href="/search"
             >
               <SearchIcon />
-            </Link>
-
-            <Link
-              className="hidden items-center gap-2 text-[11px] tracked hover:text-muted md:flex"
-              href="/account"
-            >
-              <UserIcon />
-              <span>Login</span>
             </Link>
 
             <Link

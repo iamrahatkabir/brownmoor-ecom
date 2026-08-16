@@ -109,15 +109,6 @@ export function MobileNav({ categories }: { categories: CategoryTree[] }) {
                 ))}
               </ul>
             </nav>
-
-            <div className="border-t border-line p-4">
-              <Link
-                className="flex h-11 items-center justify-center rounded-lg bg-ink text-[11px] tracked text-paper"
-                href="/account"
-              >
-                Login / Register
-              </Link>
-            </div>
           </div>
         </div>
       )}
