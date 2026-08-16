@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { isAdmin, isAdminFieldLevel, isAdminOrDocumentOwner, isAdminPanelUser } from '../access'
+import { isAdmin, isAdminFieldLevel, isAdminPanelUser, isSelfOrAdmin } from '../access'
 
 /**
  * Both shop staff and shoppers live here. The ecommerce plugin is pointed at
@@ -16,8 +16,8 @@ export const Users: CollectionConfig = {
     // themselves an admin.
     create: () => true,
     delete: isAdmin,
-    read: isAdminOrDocumentOwner,
-    update: isAdminOrDocumentOwner,
+    read: isSelfOrAdmin,
+    update: isSelfOrAdmin,
   },
   admin: {
     defaultColumns: ['email', 'name', 'roles'],

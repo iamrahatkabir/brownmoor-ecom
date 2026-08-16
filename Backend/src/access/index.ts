@@ -61,6 +61,31 @@ export const isDocumentOwner: Access = ({ req }) => {
   }
 }
 
+/**
+ * Ownership on the users collection itself.
+ *
+ * `isDocumentOwner` constrains on a `customer` field, which is right for
+ * orders, carts and addresses but does not exist on `users` — a user *is* the
+ * customer. Filtering on it there makes Postgres error on an unknown column,
+ * so a signed-in shopper hitting /api/users got a 500 instead of their own
+ * record.
+ */
+export const isSelfOrAdmin: Access = ({ req }) => {
+  if (!req.user) {
+    return false
+  }
+
+  if (hasRole(req.user, 'admin')) {
+    return true
+  }
+
+  return {
+    id: {
+      equals: req.user.id,
+    },
+  }
+}
+
 export const publicAccess: Access = () => true
 
 /**
