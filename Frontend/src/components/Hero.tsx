@@ -34,11 +34,15 @@ export function Hero({ content }: { content: HomePageGlobal | null }) {
           />
         )}
 
-        {/* Only darken the image when there is text that needs to stay legible. */}
+        {/* Only darken the image when there is text that needs to stay legible.
+            The direction has to change with the layout: on a phone the text
+            spans the full width, so a left-to-right gradient leaves its right
+            half over bare image. Small screens get a bottom-up scrim; from md
+            the text sits in the left third and the horizontal gradient works. */}
         {src && hasText && (
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-r from-ink/75 via-ink/40 to-transparent"
+            className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/60 to-ink/30 md:bg-gradient-to-r md:from-ink/75 md:via-ink/40 md:to-transparent"
           />
         )}
 
