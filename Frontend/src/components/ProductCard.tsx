@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { CardAddToCart } from '@/components/cart/CardAddToCart'
 import { firstImage, mediaURL } from '@/lib/payload'
 import { formatBDT, stockLevel, summarisePrice } from '@/lib/price'
 import type { Product } from '@/lib/types'
@@ -90,18 +91,25 @@ export function ProductCard({ product, priority = false }: { product: Product; p
 
         <div className="mt-3 flex-1" />
 
-        <Link
-          aria-disabled={soldOut}
-          className={`flex h-10 items-center justify-center text-[11px] tracked transition-colors ${
-            soldOut
-              ? 'pointer-events-none bg-wash text-faint'
-              : 'bg-ink text-paper hover:bg-muted'
-          }`}
-          href={href}
-          {...newTab}
-        >
-          {soldOut ? 'Sold out' : needsOptions ? 'Select options' : 'Add to cart'}
-        </Link>
+        {/* Sold out and variant products both lead to the product page — one
+            because there is nothing to add, the other because a size has to be
+            chosen first. Only a simple, in-stock product adds from here. */}
+        {soldOut || needsOptions ? (
+          <Link
+            aria-disabled={soldOut}
+            className={`flex h-10 items-center justify-center text-[11px] tracked transition-colors ${
+              soldOut
+                ? 'pointer-events-none bg-wash text-faint'
+                : 'bg-ink text-paper hover:bg-muted'
+            }`}
+            href={href}
+            {...newTab}
+          >
+            {soldOut ? 'Sold out' : 'Select options'}
+          </Link>
+        ) : (
+          <CardAddToCart productId={product.id} stock={stock} />
+        )}
       </div>
     </article>
   )

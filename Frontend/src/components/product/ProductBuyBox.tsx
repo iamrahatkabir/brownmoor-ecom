@@ -1,9 +1,9 @@
 'use client'
 
-import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { MinusIcon, PlusIcon, TrashIcon } from '@/components/icons'
+import { QuantityStepper } from '@/components/cart/QuantityStepper'
+import { useCartLine } from '@/components/cart/useCartLine'
 import { formatBDT } from '@/lib/price'
 import type { Product, Variant } from '@/lib/types'
 
@@ -15,19 +15,7 @@ const resolveVariants = (product: Product): Variant[] =>
     // Cheapest first reads as smallest-to-largest for a size range.
     .sort((a, b) => (a.priceInBDT ?? 0) - (b.priceInBDT ?? 0))
 
-type CartLine = {
-  id?: string
-  product: { id: number } | number
-  quantity: number
-  variant?: { id: number } | number
-}
-
-const idOf = (value: { id: number } | number | undefined): number | undefined =>
-  typeof value === 'object' ? value?.id : value
-
 export function ProductBuyBox({ product }: { product: Product }) {
-  const { addItem, cart, decrementItem, incrementItem, isLoading, removeItem } = useCart()
-
   const variants = useMemo(() => resolveVariants(product), [product])
   const hasVariants = Boolean(product.enableVariants && variants.length > 0)
 
@@ -48,28 +36,12 @@ export function ProductBuyBox({ product }: { product: Product }) {
       ? Math.round(((compareAt - price) / compareAt) * 100)
       : null
 
-  // The cart line for exactly this product-and-variant pair. Matching on both
-  // is what keeps 20cm and 24cm as separate lines rather than one.
-  const line = useMemo(() => {
-    const items = (cart?.items ?? []) as CartLine[]
-
-    return items.find(
-      (item) =>
-        idOf(item.product) === product.id &&
-        (hasVariants ? idOf(item.variant) === variantId : !item.variant),
-    )
-  }, [cart, hasVariants, product.id, variantId])
-
-  const quantity = line?.quantity ?? 0
-  const inCart = quantity > 0
-
-  const onAdd = async () => {
-    if (soldOut) {
-      return
-    }
-
-    await addItem({ product: product.id, ...(hasVariants && variantId ? { variant: variantId } : {}) })
-  }
+  // Keyed on the selected variant, so switching size swaps which cart line the
+  // controls act on.
+  const { add, decrement, inCart, increment, isLoading, quantity } = useCartLine(
+    product.id,
+    hasVariants ? variantId : undefined,
+  )
 
   // Reveals the sticky bar only once the real buttons have scrolled away, so
   // the two are never on screen competing with each other.
@@ -93,39 +65,20 @@ export function ProductBuyBox({ product }: { product: Product }) {
   }, [])
 
   const stepper = (
-    <div className="flex h-12 items-center justify-between border border-ink">
-      <button
-        aria-label={quantity === 1 ? 'Remove from cart' : 'Decrease quantity'}
-        className="flex h-full w-12 items-center justify-center text-ink disabled:opacity-40"
-        disabled={isLoading}
-        onClick={() => (quantity === 1 ? removeItem(line!.id!) : decrementItem(line!.id!))}
-        type="button"
-      >
-        {/* One left means the next tap empties the line, so the control says so. */}
-        {quantity === 1 ? <TrashIcon /> : <MinusIcon />}
-      </button>
-
-      <span aria-live="polite" className="text-sm font-medium tabular-nums">
-        {quantity}
-      </span>
-
-      <button
-        aria-label="Increase quantity"
-        className="flex h-full w-12 items-center justify-center text-ink disabled:opacity-40"
-        disabled={isLoading || quantity >= stock}
-        onClick={() => incrementItem(line!.id!)}
-        type="button"
-      >
-        <PlusIcon />
-      </button>
-    </div>
+    <QuantityStepper
+      disabled={isLoading}
+      max={stock}
+      onDecrement={decrement}
+      onIncrement={increment}
+      quantity={quantity}
+    />
   )
 
   const addButton = (
     <button
       className="h-12 w-full bg-ink text-[11px] tracked text-paper transition-colors hover:bg-muted disabled:bg-wash disabled:text-faint"
       disabled={soldOut || isLoading}
-      onClick={onAdd}
+      onClick={() => add()}
       type="button"
     >
       {soldOut ? 'Sold out' : 'Add to cart'}
