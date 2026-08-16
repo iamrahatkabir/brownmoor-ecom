@@ -1,3 +1,5 @@
+import type { Where } from 'payload'
+
 import type { CollectionOverride } from '@payloadcms/plugin-ecommerce/types'
 
 import { compareAtPriceField } from '../fields/compareAtPrice'
@@ -141,6 +143,26 @@ export const productsCollectionOverride: CollectionOverride = ({ defaultCollecti
         description: 'Surface this product on the homepage.',
         position: 'sidebar',
       },
+    },
+    {
+      name: 'relatedProducts',
+      type: 'relationship',
+      admin: {
+        description:
+          'Shown at the bottom of this product page, in this order. Leave empty and products from the same category are suggested instead.',
+      },
+      filterOptions: ({ id }): Where => {
+        // A draft would 404 for shoppers; a product should not recommend itself.
+        const and: Where[] = [{ _status: { equals: 'published' } }]
+
+        if (id) {
+          and.push({ id: { not_equals: id } })
+        }
+
+        return { and }
+      },
+      hasMany: true,
+      relationTo: 'products',
     },
   ],
 })

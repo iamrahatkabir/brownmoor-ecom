@@ -49,6 +49,10 @@ export type Product = {
   priceInBDT?: number | null
   compareAtPriceInBDT?: number | null
   variants?: { docs?: Array<Variant | number> }
+  relatedProducts?: Array<Product | number> | null
+  description?: unknown
+  careInstructions?: string | null
+  specifications?: Array<{ id?: string; label: string; value: string }> | null
 }
 
 /** One admin-configured product band on the homepage. */

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { CONTACT } from '@/lib/contact'
 import type { CategoryTree } from '@/lib/types'
 
+import { CartCount } from './CartCount'
 import { CategoryNav } from './CategoryNav'
 import { MobileNav } from './MobileNav'
 import { CartIcon, FacebookIcon, SearchIcon, UserIcon, WhatsAppIcon } from './icons'
@@ -117,10 +118,7 @@ export function Header({ categories }: { categories: CategoryTree[] }) {
               href="/cart"
             >
               <CartIcon />
-              {/* Count is wired up with the cart context in a later pass. */}
-              <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-notify px-1 text-[10px] font-medium text-paper">
-                0
-              </span>
+              <CartCount />
             </Link>
           </div>
         </div>

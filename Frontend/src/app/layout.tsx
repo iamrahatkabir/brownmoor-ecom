@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Geist } from 'next/font/google'
 
+import { CartProvider } from '@/components/CartProvider'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { getCategoryTree } from '@/lib/payload'
@@ -32,9 +33,11 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html className={`${geistSans.variable} h-full antialiased`} lang="en">
       <body className="flex min-h-full flex-col">
-        <Header categories={categories} />
-        <main className="flex-1">{children}</main>
-        <Footer categories={categories} />
+        <CartProvider>
+          <Header categories={categories} />
+          <main className="flex-1">{children}</main>
+          <Footer categories={categories} />
+        </CartProvider>
       </body>
     </html>
   )

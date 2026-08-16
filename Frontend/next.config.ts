@@ -9,6 +9,23 @@ import type { NextConfig } from 'next'
 const payloadURL = new URL(process.env.NEXT_PUBLIC_PAYLOAD_URL || 'http://localhost:3000')
 
 const nextConfig: NextConfig = {
+  /**
+   * Proxy the Payload API through the storefront's own origin.
+   *
+   * The ecommerce provider builds cart and session URLs relative to wherever
+   * the page is served — it accepts a `serverURL` but does not use it — so
+   * without this every cart request would hit the storefront and get HTML
+   * back. Proxying also makes those requests same-origin, so the auth cookie
+   * is sent normally and there is no CORS preflight on every mutation.
+   */
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${payloadURL.origin}/api/:path*`,
+      },
+    ]
+  },
   images: {
     // Next 16 refuses to optimise images whose host resolves to a private IP,
     // as an SSRF guard. In development the backend is localhost, so the guard

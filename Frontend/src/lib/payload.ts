@@ -143,6 +143,43 @@ export async function getProducts({
   return ids.map((id) => byId.get(id)).filter((doc): doc is Product => Boolean(doc))
 }
 
+export async function getProductBySlug(slug: string): Promise<Product | null> {
+  const params = new URLSearchParams({ depth: '2', limit: '1' })
+  params.set('where[slug][equals]', slug)
+
+  const result = await api<Paginated<Product>>(`/api/products?${params.toString()}`)
+
+  return result?.docs?.[0] ?? null
+}
+
+/**
+ * Curated related products, falling back to others in the same category.
+ *
+ * The fallback matters: an empty strip at the bottom of every product page
+ * would be worse than a slightly loose suggestion, and staff cannot be expected
+ * to curate every product by hand.
+ */
+export async function getRelatedProducts(product: Product, limit = 4): Promise<Product[]> {
+  const curated = toIds(product.relatedProducts)
+
+  if (curated) {
+    return getProducts({ ids: curated })
+  }
+
+  const categoryId = product.categories?.find((c) => typeof c !== 'number')
+  const slug = typeof categoryId === 'object' ? categoryId.slug : undefined
+
+  if (!slug) {
+    return []
+  }
+
+  const siblings = await getProducts({ categorySlug: slug, limit: limit + 1 })
+
+  // Drop the product itself, then trim — fetching one extra above means a full
+  // row survives that removal.
+  return siblings.filter((p) => p.id !== product.id).slice(0, limit)
+}
+
 /** Relationship fields arrive as ids or as full documents, depending on depth. */
 export const toIds = (
   values: Array<number | { id: number }> | null | undefined,

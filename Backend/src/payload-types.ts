@@ -389,6 +389,10 @@ export interface Product {
    * Surface this product on the homepage.
    */
   featured?: boolean | null;
+  /**
+   * Shown at the bottom of this product page, in this order. Leave empty and products from the same category are suggested instead.
+   */
+  relatedProducts?: (number | Product)[] | null;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -856,6 +860,7 @@ export interface ProductsSelect<T extends boolean = true> {
   slug?: T;
   categories?: T;
   featured?: T;
+  relatedProducts?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;

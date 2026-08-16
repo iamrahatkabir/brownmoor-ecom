@@ -89,6 +89,51 @@ export function CloseIcon({ className = base }: IconProps) {
   )
 }
 
+export function PlusIcon({ className = base }: IconProps) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      viewBox="0 0 24 24"
+    >
+      <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+export function MinusIcon({ className = base }: IconProps) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      viewBox="0 0 24 24"
+    >
+      <path d="M5 12h14" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+export function TrashIcon({ className = base }: IconProps) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      viewBox="0 0 24 24"
+    >
+      <path d="M4 7h16M10 4h4M9 7v12M15 7v12M6 7l1 13h10l1-13" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 export function PhoneIcon({ className = base }: IconProps) {
   return (
     <svg
