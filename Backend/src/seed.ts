@@ -167,10 +167,13 @@ export const seed = async (payload: Payload): Promise<void> => {
       },
     })
 
+    // A mix on purpose: two sizes discounted, one at full price, so the
+    // storefront's per-variant discount logic gets exercised rather than
+    // every card rendering the same badge.
     const variantSpec = [
-      { size: '16cm', price: 2450, stock: 24 },
-      { size: '20cm', price: 3100, stock: 18 },
-      { size: '24cm', price: 3850, stock: 11 },
+      { size: '16cm', price: 2450, compareAt: 2900, stock: 24 },
+      { size: '20cm', price: 3100, compareAt: 3600, stock: 18 },
+      { size: '24cm', price: 3850, compareAt: null, stock: 11 },
     ]
 
     for (const spec of variantSpec) {
@@ -183,6 +186,7 @@ export const seed = async (payload: Payload): Promise<void> => {
           inventory: spec.stock,
           priceInBDTEnabled: true,
           priceInBDT: taka(spec.price),
+          ...(spec.compareAt ? { compareAtPriceInBDT: taka(spec.compareAt) } : {}),
           _status: 'published',
         },
       })
@@ -201,6 +205,7 @@ export const seed = async (payload: Payload): Promise<void> => {
       category: 'cutlery',
       colour: '#6b4f2a',
       price: 1850,
+      compareAt: null as number | null,
       stock: 40,
       specs: [
         { label: 'Material', value: 'Solid acacia' },
@@ -214,6 +219,7 @@ export const seed = async (payload: Payload): Promise<void> => {
       category: 'bakeware',
       colour: '#4a4a52',
       price: 1250,
+      compareAt: 1600 as number | null,
       stock: 33,
       specs: [
         { label: 'Material', value: 'Carbon steel' },
@@ -240,6 +246,7 @@ export const seed = async (payload: Payload): Promise<void> => {
         inventory: spec.stock,
         priceInBDTEnabled: true,
         priceInBDT: taka(spec.price),
+        ...(spec.compareAt ? { compareAtPriceInBDT: taka(spec.compareAt) } : {}),
         specifications: spec.specs,
         _status: 'published',
       },

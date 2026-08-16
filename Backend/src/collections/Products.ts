@@ -1,5 +1,6 @@
 import type { CollectionOverride } from '@payloadcms/plugin-ecommerce/types'
 
+import { compareAtPriceField } from '../fields/compareAtPrice'
 import { slugField } from '../fields/slugField'
 
 /**
@@ -62,6 +63,16 @@ export const productsCollectionOverride: CollectionOverride = ({ defaultCollecti
             },
             // The plugin's fields: prices, inventory, and the variants setup.
             ...defaultCollection.fields,
+            // Sits after the plugin's price field so the two read together in
+            // the admin. Only meaningful on products without variants —
+            // variants carry their own compare-at price.
+            {
+              ...compareAtPriceField(),
+              admin: {
+                ...compareAtPriceField().admin,
+                condition: (data) => !data?.enableVariants,
+              },
+            },
           ],
           label: 'Details',
         },

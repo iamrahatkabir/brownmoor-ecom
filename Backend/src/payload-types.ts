@@ -117,8 +117,12 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'home-page': HomePage;
+  };
+  globalsSelect: {
+    'home-page': HomePageSelect<false> | HomePageSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -297,6 +301,10 @@ export interface Variant {
   inventory?: number | null;
   priceInBDTEnabled?: boolean | null;
   priceInBDT?: number | null;
+  /**
+   * Original price, shown struck through. Leave empty when the product is not on sale.
+   */
+  compareAtPriceInBDT?: number | null;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -347,6 +355,10 @@ export interface Product {
   };
   priceInBDTEnabled?: boolean | null;
   priceInBDT?: number | null;
+  /**
+   * Original price, shown struck through. Leave empty when the product is not on sale.
+   */
+  compareAtPriceInBDT?: number | null;
   /**
    * Kitchenware buyers compare on specifics — material, capacity, diameter, whether it is dishwasher or induction safe.
    */
@@ -757,6 +769,7 @@ export interface VariantsSelect<T extends boolean = true> {
   inventory?: T;
   priceInBDTEnabled?: T;
   priceInBDT?: T;
+  compareAtPriceInBDT?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -807,6 +820,7 @@ export interface ProductsSelect<T extends boolean = true> {
   variants?: T;
   priceInBDTEnabled?: T;
   priceInBDT?: T;
+  compareAtPriceInBDT?: T;
   specifications?:
     | T
     | {
@@ -966,6 +980,53 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-page".
+ */
+export interface HomePage {
+  id: number;
+  /**
+   * Full-width banner. Landscape works best — around 2400×1000 for a crisp result on large screens.
+   */
+  image?: (number | null) | Media;
+  /**
+   * Optional. Overlaid on the banner.
+   */
+  heading?: string | null;
+  subheading?: string | null;
+  /**
+   * e.g. "Shop cookware". Leave empty to hide the button.
+   */
+  ctaLabel?: string | null;
+  /**
+   * e.g. /category/cookware
+   */
+  ctaLink?: string | null;
+  featuredHeading?: string | null;
+  /**
+   * Short paragraph under the section heading.
+   */
+  featuredIntro?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-page_select".
+ */
+export interface HomePageSelect<T extends boolean = true> {
+  image?: T;
+  heading?: T;
+  subheading?: T;
+  ctaLabel?: T;
+  ctaLink?: T;
+  featuredHeading?: T;
+  featuredIntro?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -1,4 +1,4 @@
-import type { Currency } from '@payloadcms/plugin-ecommerce/types'
+import type { CurrenciesConfig, Currency } from '@payloadcms/plugin-ecommerce/types'
 
 /**
  * The plugin ships USD, EUR and GBP only, so Taka is defined here.
@@ -12,4 +12,13 @@ export const BDT: Currency = {
   decimals: 2,
   label: 'Bangladeshi Taka',
   symbol: '৳',
+}
+
+/**
+ * Shared so that fields we add ourselves — the compare-at price, for one — get
+ * the same admin formatting as the price fields the plugin generates.
+ */
+export const currenciesConfig: CurrenciesConfig = {
+  defaultCurrency: BDT.code,
+  supportedCurrencies: [BDT],
 }

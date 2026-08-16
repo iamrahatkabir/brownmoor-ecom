@@ -20,7 +20,9 @@ import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
 import { productsCollectionOverride } from './collections/Products'
 import { Users } from './collections/Users'
-import { BDT } from './currencies'
+import { variantsCollectionOverride } from './collections/Variants'
+import { currenciesConfig } from './currencies'
+import { HomePage } from './globals/HomePage'
 import { cashOnDeliveryAdapter } from './payments/cashOnDelivery'
 
 const filename = fileURLToPath(import.meta.url)
@@ -46,6 +48,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Categories],
+  globals: [HomePage],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -99,10 +102,7 @@ export default buildConfig({
         // login via the context's `onLogin`.
         allowGuestCarts: true,
       },
-      currencies: {
-        defaultCurrency: 'BDT',
-        supportedCurrencies: [BDT],
-      },
+      currencies: currenciesConfig,
       customers: {
         slug: 'users',
       },
@@ -113,7 +113,9 @@ export default buildConfig({
       },
       products: {
         productsCollectionOverride,
-        variants: true,
+        variants: {
+          variantsCollectionOverride,
+        },
       },
       transactions: true,
     }),
