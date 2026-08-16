@@ -83,10 +83,30 @@ fails: it feeds both the CORS and CSRF allowlists.
 
 ```bash
 npm run dev              # admin + API on :3000
+npm run seed             # install the demo catalogue
+npm run seed:clear       # remove everything the seed installed
 npm run generate:types   # regenerate src/payload-types.ts after schema changes
 npm run lint
 npm run test             # integration + e2e; both need a database
 ```
+
+## Demo data
+
+`src/seed/data.ts` defines a demo catalogue — 14 categories, 17 products (5 of
+them with variants), and homepage hero copy. Both `seed` and `seed:clear` read
+from that one file, so there is no second list to keep in sync.
+
+`seed` is safe to re-run: every record is looked up first and skipped if
+present, so it never duplicates.
+
+`seed:clear` removes only what the seed created. It targets demo product slugs,
+the demo variant type names, and media whose filename starts with `demo-`, so a
+product you added yourself in the admin panel is never touched. It refuses to
+run if any order references a demo product, since deleting a product out from
+under an order would leave that order unreadable.
+
+Replace the demo data with real products whenever you're ready — `seed:clear`
+then `npm run seed` is a clean reset in between.
 
 Run `generate:types` after any collection or field change — the generated types
 are what keep the adapter and access control honest.
