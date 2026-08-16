@@ -64,7 +64,7 @@ export function ProductSection({
       {viewAllHref && viewAllLabel && (
         <div className="mt-8 text-center">
           <Link
-            className="inline-flex h-11 items-center justify-center border border-ink px-8 text-[11px] tracked text-ink transition-colors hover:bg-ink hover:text-paper"
+            className="inline-flex h-11 items-center justify-center rounded-lg border border-ink px-8 text-[11px] tracked text-ink transition-colors hover:bg-ink hover:text-paper"
             href={viewAllHref}
           >
             {viewAllLabel}

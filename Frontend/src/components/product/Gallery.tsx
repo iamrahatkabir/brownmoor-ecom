@@ -17,7 +17,7 @@ export function Gallery({ images, title }: { images: Media[]; title: string }) {
 
   return (
     <div>
-      <div className="relative aspect-square overflow-hidden border border-line bg-wash">
+      <div className="relative aspect-square overflow-hidden rounded-lg border border-line bg-wash">
         {src ? (
           <Image
             alt={current?.alt || title}
@@ -44,7 +44,7 @@ export function Gallery({ images, title }: { images: Media[]; title: string }) {
               <button
                 aria-label={`View image ${index + 1}`}
                 aria-pressed={index === active}
-                className={`relative h-16 w-16 shrink-0 overflow-hidden border bg-wash transition-colors ${
+                className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border bg-wash transition-colors ${
                   index === active ? 'border-ink' : 'border-line hover:border-muted'
                 }`}
                 key={image.id ?? index}

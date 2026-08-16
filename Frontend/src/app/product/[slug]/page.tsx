@@ -78,7 +78,7 @@ export default async function ProductPage({ params }: Params) {
             <h1 className="text-xl font-semibold leading-snug md:text-2xl">{product.title}</h1>
 
             {category && (
-              <p className="mt-2 inline-block bg-wash px-2 py-1 text-[11px] text-muted">
+              <p className="mt-2 inline-block rounded-lg bg-wash px-2 py-1 text-[11px] text-muted">
                 {category.title}
               </p>
             )}
@@ -89,7 +89,7 @@ export default async function ProductPage({ params }: Params) {
 
             <ProductBuyBox product={product} />
 
-            <ul className="mt-6 space-y-2 border border-line bg-wash p-4 text-xs text-muted">
+            <ul className="mt-6 space-y-2 rounded-lg border border-line bg-wash p-4 text-xs text-muted">
               <li>Cash on delivery available across Bangladesh.</li>
               <li>Delivery inside Dhaka ৳80, outside Dhaka ৳150.</li>
               <li>Questions? Message us on WhatsApp before you order.</li>

@@ -60,7 +60,7 @@ export function Hero({ content }: { content: HomePageGlobal | null }) {
 
                 {hasCTA && (
                   <Link
-                    className="mt-6 inline-flex h-11 items-center justify-center bg-paper px-8 text-[11px] tracked text-ink transition-colors hover:bg-line"
+                    className="mt-6 inline-flex h-11 items-center justify-center rounded-lg bg-paper px-8 text-[11px] tracked text-ink transition-colors hover:bg-line"
                     href={content!.ctaLink!}
                   >
                     {content!.ctaLabel}

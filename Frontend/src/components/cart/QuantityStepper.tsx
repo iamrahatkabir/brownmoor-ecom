@@ -27,7 +27,7 @@ export function QuantityStepper({
   const atMax = typeof max === 'number' && quantity >= max
 
   return (
-    <div className={`flex items-center justify-between border border-ink ${className}`}>
+    <div className={`flex items-center justify-between rounded-lg border border-ink ${className}`}>
       <button
         aria-label={quantity <= 1 ? 'Remove from cart' : 'Decrease quantity'}
         className="flex h-full w-10 items-center justify-center text-ink disabled:opacity-40 md:w-12"

@@ -77,7 +77,7 @@ export function Header({ categories }: { categories: CategoryTree[] }) {
           </Link>
 
           <form action="/search" className="ml-auto hidden max-w-xl flex-1 md:block">
-            <div className="flex h-11 items-center border border-line focus-within:border-ink">
+            <div className="flex h-11 items-center rounded-lg border border-line focus-within:border-ink">
               <input
                 aria-label="Search products"
                 className="h-full w-full bg-transparent px-4 text-sm outline-none placeholder:text-faint"

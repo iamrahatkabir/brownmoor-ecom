@@ -76,7 +76,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
 
   const addButton = (
     <button
-      className="h-12 w-full bg-ink text-[11px] tracked text-paper transition-colors hover:bg-muted disabled:bg-wash disabled:text-faint"
+      className="h-12 w-full rounded-lg bg-ink text-[11px] tracked text-paper transition-colors hover:bg-muted disabled:bg-wash disabled:text-faint"
       disabled={soldOut || isPending}
       onClick={() => add()}
       type="button"
@@ -95,7 +95,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
               {compareAt && discount ? (
                 <>
                   <span className="text-base text-faint line-through">{formatBDT(compareAt)}</span>
-                  <span className="bg-sale px-1.5 py-0.5 text-[10px] font-semibold text-paper">
+                  <span className="rounded-lg bg-sale px-1.5 py-0.5 text-[10px] font-semibold text-paper">
                     −{discount}%
                   </span>
                 </>
@@ -122,7 +122,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
                 return (
                   <button
                     aria-pressed={active}
-                    className={`flex flex-col items-start border px-3 py-2.5 text-left transition-colors ${
+                    className={`flex flex-col items-start rounded-lg border px-3 py-2.5 text-left transition-colors ${
                       active ? 'border-ink bg-wash' : 'border-line hover:border-muted'
                     } ${out ? 'opacity-45' : ''}`}
                     key={variant.id}
@@ -150,7 +150,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
               the natural next step, and two competing CTAs muddle it. */}
           {!inCart && !soldOut && (
             <a
-              className="flex h-12 w-full items-center justify-center border border-ink text-[11px] tracked text-ink transition-colors hover:bg-ink hover:text-paper"
+              className="flex h-12 w-full items-center justify-center rounded-lg border border-ink text-[11px] tracked text-ink transition-colors hover:bg-ink hover:text-paper"
               href="/checkout"
             >
               Buy now

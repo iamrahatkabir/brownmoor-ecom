@@ -27,16 +27,16 @@ export function ProductCard({ product, priority = false }: { product: Product; p
   const newTab = { rel: 'noopener', target: '_blank' as const }
 
   return (
-    <article className="group flex flex-col border border-line bg-paper transition-colors hover:border-ink">
+    <article className="group flex flex-col overflow-hidden rounded-lg border border-line bg-paper transition-colors hover:border-ink">
       <div className="relative aspect-square overflow-hidden bg-wash">
         {price.discountPercent !== null && (
-          <span className="absolute left-2 top-2 z-10 bg-sale px-1.5 py-0.5 text-[10px] font-semibold text-paper">
+          <span className="absolute left-2 top-2 z-10 rounded-lg bg-sale px-1.5 py-0.5 text-[10px] font-semibold text-paper">
             −{price.discountPercent}%
           </span>
         )}
 
         {soldOut && (
-          <span className="absolute right-2 top-2 z-10 bg-ink px-1.5 py-0.5 text-[10px] tracked text-paper">
+          <span className="absolute right-2 top-2 z-10 rounded-lg bg-ink px-1.5 py-0.5 text-[10px] tracked text-paper">
             Sold out
           </span>
         )}
@@ -97,7 +97,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
         {soldOut || needsOptions ? (
           <Link
             aria-disabled={soldOut}
-            className={`flex h-10 items-center justify-center text-[11px] tracked transition-colors ${
+            className={`flex h-10 items-center justify-center rounded-lg text-[11px] tracked transition-colors ${
               soldOut
                 ? 'pointer-events-none bg-wash text-faint'
                 : 'bg-ink text-paper hover:bg-muted'
