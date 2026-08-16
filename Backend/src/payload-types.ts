@@ -1032,18 +1032,34 @@ export interface HomePage {
    */
   ctaLink?: string | null;
   /**
-   * Small label above the heading. Leave empty to hide it.
+   * Product bands shown below the hero, in this order. Up to 5. Drag to rearrange; delete one to remove it from the homepage.
    */
-  featuredEyebrow?: string | null;
-  featuredHeading?: string | null;
-  /**
-   * Short paragraph under the section heading.
-   */
-  featuredIntro?: string | null;
-  /**
-   * Pick the products to feature, and drag to reorder — the homepage shows them in this order. Leave empty to fall back to every product ticked "Featured" on its own page.
-   */
-  featuredProducts?: (number | Product)[] | null;
+  sections?:
+    | {
+        /**
+         * Small label above the heading. Leave empty to hide it.
+         */
+        eyebrow?: string | null;
+        heading: string;
+        /**
+         * Short paragraph under the heading. Optional.
+         */
+        intro?: string | null;
+        /**
+         * Pick up to 8 products and drag to reorder. The band is hidden if this is empty.
+         */
+        products?: (number | Product)[] | null;
+        /**
+         * Button text. Leave empty to hide the button.
+         */
+        viewAllLabel?: string | null;
+        /**
+         * Where the button goes, e.g. /category/cookware
+         */
+        viewAllUrl?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1104,10 +1120,17 @@ export interface HomePageSelect<T extends boolean = true> {
   subheading?: T;
   ctaLabel?: T;
   ctaLink?: T;
-  featuredEyebrow?: T;
-  featuredHeading?: T;
-  featuredIntro?: T;
-  featuredProducts?: T;
+  sections?:
+    | T
+    | {
+        eyebrow?: T;
+        heading?: T;
+        intro?: T;
+        products?: T;
+        viewAllLabel?: T;
+        viewAllUrl?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

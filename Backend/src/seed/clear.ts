@@ -87,10 +87,11 @@ const clear = async (payload: Payload): Promise<void> => {
     data: {
       ctaLabel: null,
       ctaLink: null,
-      featuredHeading: null,
-      featuredIntro: null,
       heading: null,
       image: null,
+      // Product bands reference demo products, so they have to go with them —
+      // leaving them would point the homepage at deleted rows.
+      sections: [],
       subheading: null,
     },
   })

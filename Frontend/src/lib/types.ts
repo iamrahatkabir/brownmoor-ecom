@@ -51,17 +51,25 @@ export type Product = {
   variants?: { docs?: Array<Variant | number> }
 }
 
+/** One admin-configured product band on the homepage. */
+export type HomeSection = {
+  id?: string
+  eyebrow?: string | null
+  heading: string
+  intro?: string | null
+  /** Hand-picked, in the order arranged in the admin panel. Capped at 8. */
+  products?: Array<Product | number> | null
+  viewAllLabel?: string | null
+  viewAllUrl?: string | null
+}
+
 export type HomePageGlobal = {
   image?: Media | number | null
   heading?: string | null
   subheading?: string | null
   ctaLabel?: string | null
   ctaLink?: string | null
-  featuredEyebrow?: string | null
-  featuredHeading?: string | null
-  featuredIntro?: string | null
-  /** Hand-picked, in the order arranged in the admin panel. */
-  featuredProducts?: Array<Product | number> | null
+  sections?: HomeSection[] | null
 }
 
 export type Paginated<T> = {

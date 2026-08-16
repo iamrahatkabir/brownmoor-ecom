@@ -1,54 +1,47 @@
 import { Hero } from '@/components/Hero'
 import { ProductSection } from '@/components/ProductSection'
-import { getCategoryTree, getHomePage, getProducts, toIds } from '@/lib/payload'
+import { getHomePage, getProducts, toIds } from '@/lib/payload'
 
 /**
  * Home page.
  *
- * Structure follows the reference layout: hero, a featured band, then one band
- * per top-level category. The category bands are generated from live data, so
- * the page grows as the catalogue does without anyone editing this file.
+ * Everything below the hero is admin-configured: the bands, their order, their
+ * copy, which products sit in each, and where the button goes. Editing the
+ * homepage is a content task, not a code change.
  */
 export default async function HomePage() {
-  // Independent requests, so they run concurrently rather than in series —
-  // waterfalling these would add up to the slowest possible first paint.
-  const [content, categories] = await Promise.all([getHomePage(), getCategoryTree()])
+  const content = await getHomePage()
+  const sections = content?.sections ?? []
 
-  // Two ways to fill the featured band. A hand-picked list in the admin wins,
-  // in the order it was arranged there; with nothing picked we fall back to
-  // whichever products are ticked "Featured" on their own page.
-  const pickedIds = toIds(content?.featuredProducts)
+  // One request per band, issued together rather than in series — five
+  // sequential fetches would stack their latency into the first paint.
+  const resolved = await Promise.all(
+    sections.map(async (section) => {
+      const ids = toIds(section.products)
 
-  const [featured, categoryProducts] = await Promise.all([
-    pickedIds ? getProducts({ ids: pickedIds }) : getProducts({ featured: true, limit: 8 }),
-    Promise.all(
-      categories.map(async (category) => ({
-        category,
-        products: await getProducts({ categorySlug: category.slug, limit: 4 }),
-      })),
-    ),
-  ])
+      return {
+        section,
+        products: ids ? await getProducts({ ids }) : [],
+      }
+    }),
+  )
 
   return (
     <>
       <Hero content={content} />
 
-      <ProductSection
-        eyebrow={content?.featuredEyebrow || undefined}
-        heading={content?.featuredHeading || 'Featured Products'}
-        intro={content?.featuredIntro}
-        priority
-        products={featured}
-        viewAllHref="/shop"
-      />
-
-      {categoryProducts.map(({ category, products }) => (
+      {resolved.map(({ section, products }, index) => (
         <ProductSection
-          heading={category.title}
-          intro={category.description}
-          key={category.id}
+          eyebrow={section.eyebrow}
+          heading={section.heading}
+          intro={section.intro}
+          key={section.id ?? index}
+          // Only the first band sits above the fold, so only its images are
+          // worth preloading.
+          priority={index === 0}
           products={products}
-          viewAllHref={`/category/${category.slug}`}
+          viewAllHref={section.viewAllUrl}
+          viewAllLabel={section.viewAllLabel}
         />
       ))}
     </>

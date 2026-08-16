@@ -355,11 +355,83 @@ export const PRODUCTS: ProductSpec[] = [
 export const HOME_PAGE = {
   ctaLabel: 'Shop cookware',
   ctaLink: '/category/cookware',
-  featuredHeading: 'Featured Products',
-  featuredIntro:
-    'A short edit of the pieces we reach for most — chosen for how they perform after a hundred meals, not the first one.',
   heading: 'Built for everyday cooking',
   heroColour: '#1c1f1d',
   subheading:
     'Cookware, cutlery and tableware chosen to last. Cash on delivery anywhere in Bangladesh.',
 }
+
+/**
+ * The five homepage bands. Products are named by slug and resolved to ids at
+ * seed time, so this stays readable and survives a re-seed giving out new ids.
+ */
+export const HOME_SECTIONS: Array<{
+  eyebrow: null | string
+  heading: string
+  intro: null | string
+  products: string[]
+  viewAllLabel: string
+  viewAllUrl: string
+}> = [
+  {
+    eyebrow: 'Handpicked',
+    heading: 'Featured Products',
+    intro:
+      'A short edit of the pieces we reach for most — chosen for how they perform after a hundred meals, not the first one.',
+    products: [
+      'porcelain-dinner-set',
+      'damascus-chefs-knife',
+      'carbon-steel-wok',
+      'hard-anodised-frying-pan',
+      'tri-ply-stainless-steel-saucepan',
+    ],
+    viewAllLabel: 'View all',
+    viewAllUrl: '/shop',
+  },
+  {
+    eyebrow: null,
+    heading: 'Cookware',
+    intro: 'Pans and pots that hold heat evenly and take daily use without complaint.',
+    products: [
+      'tri-ply-stainless-steel-saucepan',
+      'hard-anodised-frying-pan',
+      'cast-iron-skillet',
+      'carbon-steel-wok',
+      'aluminium-pressure-cooker',
+      'stainless-steel-pressure-cooker',
+      'non-stick-karai',
+      'non-stick-milk-pan',
+    ],
+    viewAllLabel: 'View all cookware',
+    viewAllUrl: '/category/cookware',
+  },
+  {
+    eyebrow: null,
+    heading: 'Bakeware',
+    intro: 'Tins and moulds that release cleanly and keep their shape.',
+    products: ['carbon-steel-loaf-tin', 'springform-cake-tin', 'silicone-muffin-mould'],
+    viewAllLabel: 'View all bakeware',
+    viewAllUrl: '/category/bakeware',
+  },
+  {
+    eyebrow: null,
+    heading: 'Cutlery & Boards',
+    intro: 'Knives worth sharpening, and surfaces that stay kind to them.',
+    products: [
+      'damascus-chefs-knife',
+      'stainless-steel-knife-set',
+      'acacia-wood-chopping-board',
+      'bamboo-chopping-board-set',
+    ],
+    viewAllLabel: 'View all cutlery',
+    viewAllUrl: '/category/cutlery',
+  },
+  {
+    eyebrow: null,
+    heading: 'Tableware & Storage',
+    intro: 'For serving it, and for what is left over.',
+    products: ['porcelain-dinner-set', 'airtight-glass-container-set'],
+    viewAllLabel: 'View all tableware',
+    viewAllUrl: '/category/tableware',
+  },
+]

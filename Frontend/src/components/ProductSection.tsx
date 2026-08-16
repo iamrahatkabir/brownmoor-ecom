@@ -20,13 +20,15 @@ export function ProductSection({
   intro,
   products,
   viewAllHref,
+  viewAllLabel = 'View all',
   priority = false,
 }: {
-  eyebrow?: string
+  eyebrow?: null | string
   heading: string
-  intro?: string | null
+  intro?: null | string
   products: Product[]
-  viewAllHref?: string
+  viewAllHref?: null | string
+  viewAllLabel?: null | string
   priority?: boolean
 }) {
   if (products.length === 0) {
@@ -57,13 +59,15 @@ export function ProductSection({
         ))}
       </div>
 
-      {viewAllHref && (
+      {/* Both are required: a button with no destination is a dead end, and a
+          destination with no label is invisible. */}
+      {viewAllHref && viewAllLabel && (
         <div className="mt-8 text-center">
           <Link
             className="inline-flex h-11 items-center justify-center border border-ink px-8 text-[11px] tracked text-ink transition-colors hover:bg-ink hover:text-paper"
             href={viewAllHref}
           >
-            View all
+            {viewAllLabel}
           </Link>
         </div>
       )}

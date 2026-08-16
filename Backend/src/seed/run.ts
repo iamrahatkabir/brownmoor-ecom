@@ -4,7 +4,7 @@ import { getPayload } from 'payload'
 import sharp from 'sharp'
 
 import config from '../payload.config'
-import { CATEGORIES, HOME_PAGE, imageName, PRODUCTS, VARIANT_TYPES } from './data'
+import { CATEGORIES, HOME_PAGE, HOME_SECTIONS, imageName, PRODUCTS, VARIANT_TYPES } from './data'
 
 /**
  * Installs the demo catalogue defined in ./data.ts.
@@ -189,32 +189,66 @@ const seed = async (payload: Payload): Promise<void> => {
   payload.logger.info(`  products created: ${created} (${PRODUCTS.length - created} already present)`)
 
   // ----------------------------------------------------------------- home page
+  // Hero and sections are guarded separately. Sharing one condition meant that
+  // if a run was interrupted after the hero was set but before the sections
+  // were, no later run would ever fill the sections in.
   const home = await payload.findGlobal({ slug: 'home-page' })
+  const needsHero = !home?.image
+  const needsSections = !home?.sections || home.sections.length === 0
 
-  if (!home?.image) {
-    const banner = await uploadImage(
-      payload,
-      'hero-banner',
-      'Brownmoor',
-      HOME_PAGE.heroColour,
-      2400,
-      1000,
+  if (needsHero || needsSections) {
+    const update: Record<string, unknown> = {}
+
+    if (needsHero) {
+      const banner = await uploadImage(
+        payload,
+        'hero-banner',
+        'Brownmoor',
+        HOME_PAGE.heroColour,
+        2400,
+        1000,
+      )
+
+      update.ctaLabel = HOME_PAGE.ctaLabel
+      update.ctaLink = HOME_PAGE.ctaLink
+      update.heading = HOME_PAGE.heading
+      update.image = banner.id
+      update.subheading = HOME_PAGE.subheading
+    }
+
+    if (needsSections) {
+      // Slugs are resolved to ids here, so the sections survive a re-seed
+      // handing out different ids. A slug that no longer resolves is skipped.
+      const idBySlug = new Map<string, number>()
+      const { docs: allProducts } = await payload.find({
+        collection: 'products',
+        depth: 0,
+        limit: 500,
+      })
+
+      for (const product of allProducts) {
+        idBySlug.set(product.slug, product.id)
+      }
+
+      update.sections = HOME_SECTIONS.map((section) => ({
+        eyebrow: section.eyebrow,
+        heading: section.heading,
+        intro: section.intro,
+        products: section.products
+          .map((slug) => idBySlug.get(slug))
+          .filter((id): id is number => typeof id === 'number'),
+        viewAllLabel: section.viewAllLabel,
+        viewAllUrl: section.viewAllUrl,
+      }))
+    }
+
+    await payload.updateGlobal({ slug: 'home-page', data: update as never })
+
+    payload.logger.info(
+      `  home page: ${[needsHero && 'hero', needsSections && `${HOME_SECTIONS.length} sections`]
+        .filter(Boolean)
+        .join(' + ')}`,
     )
-
-    await payload.updateGlobal({
-      slug: 'home-page',
-      data: {
-        ctaLabel: HOME_PAGE.ctaLabel,
-        ctaLink: HOME_PAGE.ctaLink,
-        featuredHeading: HOME_PAGE.featuredHeading,
-        featuredIntro: HOME_PAGE.featuredIntro,
-        heading: HOME_PAGE.heading,
-        image: banner.id,
-        subheading: HOME_PAGE.subheading,
-      },
-    })
-
-    payload.logger.info('  home page: hero banner set')
   }
 
   payload.logger.info('Demo data installed. Remove it with: npm run seed:clear')
