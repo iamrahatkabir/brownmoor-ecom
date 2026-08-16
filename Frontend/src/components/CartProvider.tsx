@@ -21,8 +21,35 @@ export function CartProvider({ children }: { children: ReactNode }) {
     <EcommerceProvider
       api={{
         apiRoute: '/api',
-        // Cart mutations are cross-origin to the Payload app, so the provider
-        // needs the absolute origin rather than the storefront's own.
+        /**
+         * The provider's own query populates only `priceInBDT` on products —
+         * enough to total a cart, but not to draw one. Without widening this
+         * the cart page gets lines whose product has a price and nothing else,
+         * so every row renders an empty title and a /product/undefined link.
+         */
+        cartsFetchQuery: {
+          depth: 2,
+          populate: {
+            products: {
+              compareAtPriceInBDT: true,
+              enableVariants: true,
+              gallery: true,
+              inventory: true,
+              priceInBDT: true,
+              slug: true,
+              title: true,
+            },
+            variants: {
+              compareAtPriceInBDT: true,
+              inventory: true,
+              options: true,
+              priceInBDT: true,
+              title: true,
+            },
+          },
+        },
+        // Ignored by this version of the provider — it builds URLs relative to
+        // the page — which is why next.config.ts proxies /api to Payload.
         serverURL: PAYLOAD_URL,
       }}
       currenciesConfig={{
