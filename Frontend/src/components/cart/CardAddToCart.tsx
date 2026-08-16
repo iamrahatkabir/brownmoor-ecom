@@ -24,7 +24,7 @@ export function CardAddToCart({
   if (inCart) {
     return (
       <QuantityStepper
-        className="h-10"
+        className="h-9 md:h-10"
         disabled={isPending}
         max={stock}
         onDecrement={decrement}
@@ -36,7 +36,7 @@ export function CardAddToCart({
 
   return (
     <button
-      className="h-10 w-full rounded-lg bg-ink text-[11px] tracked text-paper transition-colors hover:bg-muted disabled:bg-wash disabled:text-faint"
+      className="h-9 w-full rounded-lg bg-ink text-[11px] tracked text-paper transition-colors hover:bg-muted disabled:bg-wash disabled:text-faint md:h-10"
       disabled={isPending}
       onClick={() => add()}
       type="button"

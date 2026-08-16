@@ -28,7 +28,7 @@ export function ProductListing({
   totalPages: number
 }) {
   return (
-    <div className="mx-auto max-w-[1280px] px-4 py-6 md:py-10">
+    <div className="mx-auto max-w-[1280px] px-4 py-5 md:py-10">
       <nav aria-label="Breadcrumb" className="text-xs text-faint">
         <ol className="flex flex-wrap items-center gap-1.5">
           <li>
@@ -42,7 +42,7 @@ export function ProductListing({
       </nav>
 
       <div className="mt-4 flex flex-wrap items-baseline justify-between gap-3 md:mt-6">
-        <h1 className="text-2xl font-semibold tracking-tight md:text-4xl">{title}</h1>
+        <h1 className="text-xl font-semibold tracking-tight md:text-4xl">{title}</h1>
         {totalDocs > 0 && (
           <p className="text-xs text-muted">
             {totalDocs} {totalDocs === 1 ? 'product' : 'products'}
@@ -56,7 +56,7 @@ export function ProductListing({
         </p>
       ) : (
         <>
-          <div className="mt-6 grid grid-cols-2 gap-3 md:mt-8 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
+          <div className="mt-5 grid grid-cols-2 gap-2.5 md:mt-8 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
             {products.map((product, index) => (
               <ProductCard
                 key={product.id}

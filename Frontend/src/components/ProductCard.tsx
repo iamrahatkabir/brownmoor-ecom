@@ -62,16 +62,16 @@ export function ProductCard({ product, priority = false }: { product: Product; p
         </Link>
       </div>
 
-      <div className="flex flex-1 flex-col p-3 md:p-4">
+      <div className="flex flex-1 flex-col p-2.5 md:p-4">
         {/* Fixed two-line height keeps buttons aligned across a row whether a
             title wraps to one line or two. */}
-        <h3 className="line-clamp-2-fixed min-h-[2.6rem] text-[13px] leading-[1.45] text-ink md:text-sm">
+        <h3 className="line-clamp-2-fixed min-h-[2.25rem] text-[13px] leading-[1.35] text-ink md:min-h-[2.6rem] md:leading-[1.45] md:text-sm">
           <Link className="hover:underline" href={href} {...newTab}>
             {product.title}
           </Link>
         </h3>
 
-        <div className="mt-2 flex flex-wrap items-baseline gap-x-2">
+        <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2 md:mt-2">
           {price.amount === null ? (
             <span className="text-sm text-faint">Price on request</span>
           ) : (
@@ -89,7 +89,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
           )}
         </div>
 
-        <div className="mt-3 flex-1" />
+        <div className="mt-2 flex-1 md:mt-3" />
 
         {/* Sold out and variant products both lead to the product page — one
             because there is nothing to add, the other because a size has to be
@@ -97,7 +97,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
         {soldOut || needsOptions ? (
           <Link
             aria-disabled={soldOut}
-            className={`flex h-10 items-center justify-center rounded-lg text-[11px] tracked transition-colors ${
+            className={`flex h-9 items-center justify-center rounded-lg text-[11px] tracked transition-colors md:h-10 ${
               soldOut
                 ? 'pointer-events-none bg-wash text-faint'
                 : 'bg-ink text-paper hover:bg-muted'

@@ -36,18 +36,18 @@ export function ProductSection({
   }
 
   return (
-    <section className="mx-auto max-w-[1280px] px-4 py-10 md:py-14">
+    <section className="mx-auto max-w-[1280px] px-4 py-8 md:py-14">
       <div className="mx-auto max-w-2xl text-center">
         {eyebrow && <p className="text-[11px] tracked text-faint">{eyebrow}</p>}
 
-        <h2 className="mt-2 text-xl font-semibold tracking-tight text-ink md:text-2xl">
+        <h2 className="mt-2 text-lg font-semibold tracking-tight text-ink md:text-2xl">
           {heading}
         </h2>
 
         {intro && <p className="mt-3 text-sm leading-relaxed text-muted">{intro}</p>}
       </div>
 
-      <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
+      <div className="mt-6 grid grid-cols-2 gap-2.5 md:mt-8 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
         {products.map((product, index) => (
           <ProductCard
             key={product.id}
