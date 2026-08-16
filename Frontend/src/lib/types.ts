@@ -57,8 +57,11 @@ export type HomePageGlobal = {
   subheading?: string | null
   ctaLabel?: string | null
   ctaLink?: string | null
+  featuredEyebrow?: string | null
   featuredHeading?: string | null
   featuredIntro?: string | null
+  /** Hand-picked, in the order arranged in the admin panel. */
+  featuredProducts?: Array<Product | number> | null
 }
 
 export type Paginated<T> = {

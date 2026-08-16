@@ -1,6 +1,6 @@
 import { Hero } from '@/components/Hero'
 import { ProductSection } from '@/components/ProductSection'
-import { getCategoryTree, getHomePage, getProducts } from '@/lib/payload'
+import { getCategoryTree, getHomePage, getProducts, toIds } from '@/lib/payload'
 
 /**
  * Home page.
@@ -12,30 +12,31 @@ import { getCategoryTree, getHomePage, getProducts } from '@/lib/payload'
 export default async function HomePage() {
   // Independent requests, so they run concurrently rather than in series —
   // waterfalling these would add up to the slowest possible first paint.
-  const [content, categories, featured] = await Promise.all([
-    getHomePage(),
-    getCategoryTree(),
-    getProducts({ featured: true, limit: 8 }),
-  ])
+  const [content, categories] = await Promise.all([getHomePage(), getCategoryTree()])
 
-  const categoryProducts = await Promise.all(
-    categories.map(async (category) => ({
-      category,
-      products: await getProducts({ categorySlug: category.slug, limit: 4 }),
-    })),
-  )
+  // Two ways to fill the featured band. A hand-picked list in the admin wins,
+  // in the order it was arranged there; with nothing picked we fall back to
+  // whichever products are ticked "Featured" on their own page.
+  const pickedIds = toIds(content?.featuredProducts)
+
+  const [featured, categoryProducts] = await Promise.all([
+    pickedIds ? getProducts({ ids: pickedIds }) : getProducts({ featured: true, limit: 8 }),
+    Promise.all(
+      categories.map(async (category) => ({
+        category,
+        products: await getProducts({ categorySlug: category.slug, limit: 4 }),
+      })),
+    ),
+  ])
 
   return (
     <>
       <Hero content={content} />
 
       <ProductSection
-        eyebrow="Handpicked"
+        eyebrow={content?.featuredEyebrow || undefined}
         heading={content?.featuredHeading || 'Featured Products'}
-        intro={
-          content?.featuredIntro ||
-          'A short edit of the pieces we reach for most — chosen for how they perform after a hundred meals, not the first one.'
-        }
+        intro={content?.featuredIntro}
         priority
         products={featured}
         viewAllHref="/shop"

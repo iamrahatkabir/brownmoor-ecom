@@ -93,18 +93,26 @@ export async function getCategoryTree(): Promise<CategoryTree[]> {
 type ProductQuery = {
   categorySlug?: string
   featured?: boolean
+  ids?: number[]
   limit?: number
 }
 
 export async function getProducts({
   categorySlug,
   featured,
+  ids,
   limit = 8,
 }: ProductQuery = {}): Promise<Product[]> {
+  // An explicit empty selection means "nothing", not "everything" — without
+  // this guard the query would drop the filter and return the whole catalogue.
+  if (ids && ids.length === 0) {
+    return []
+  }
+
   const params = new URLSearchParams({
     // depth 2 resolves gallery images and the variants' option labels.
     depth: '2',
-    limit: String(limit),
+    limit: String(ids?.length ?? limit),
     sort: '-createdAt',
   })
 
@@ -116,7 +124,32 @@ export async function getProducts({
     params.set('where[categories.slug][equals]', categorySlug)
   }
 
-  const result = await api<Paginated<Product>>(`/api/products?${params.toString()}`)
+  if (ids) {
+    params.set('where[id][in]', ids.join(','))
+  }
 
-  return result?.docs ?? []
+  const result = await api<Paginated<Product>>(`/api/products?${params.toString()}`)
+  const docs = result?.docs ?? []
+
+  if (!ids) {
+    return docs
+  }
+
+  // Payload returns rows in its own order, so restore the sequence the admin
+  // arranged in the panel. Missing ids (unpublished or deleted since) simply
+  // drop out rather than leaving a gap.
+  const byId = new Map(docs.map((doc) => [doc.id, doc]))
+
+  return ids.map((id) => byId.get(id)).filter((doc): doc is Product => Boolean(doc))
+}
+
+/** Relationship fields arrive as ids or as full documents, depending on depth. */
+export const toIds = (
+  values: Array<number | { id: number }> | null | undefined,
+): number[] | undefined => {
+  if (!values || values.length === 0) {
+    return undefined
+  }
+
+  return values.map((value) => (typeof value === 'number' ? value : value.id))
 }

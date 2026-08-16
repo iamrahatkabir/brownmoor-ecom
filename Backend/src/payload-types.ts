@@ -1031,11 +1031,19 @@ export interface HomePage {
    * e.g. /category/cookware
    */
   ctaLink?: string | null;
+  /**
+   * Small label above the heading. Leave empty to hide it.
+   */
+  featuredEyebrow?: string | null;
   featuredHeading?: string | null;
   /**
    * Short paragraph under the section heading.
    */
   featuredIntro?: string | null;
+  /**
+   * Pick the products to feature, and drag to reorder — the homepage shows them in this order. Leave empty to fall back to every product ticked "Featured" on its own page.
+   */
+  featuredProducts?: (number | Product)[] | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1096,8 +1104,10 @@ export interface HomePageSelect<T extends boolean = true> {
   subheading?: T;
   ctaLabel?: T;
   ctaLink?: T;
+  featuredEyebrow?: T;
   featuredHeading?: T;
   featuredIntro?: T;
+  featuredProducts?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

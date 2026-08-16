@@ -72,6 +72,14 @@ export const HomePage: GlobalConfig = {
       type: 'collapsible',
       fields: [
         {
+          name: 'featuredEyebrow',
+          type: 'text',
+          admin: {
+            description: 'Small label above the heading. Leave empty to hide it.',
+          },
+          defaultValue: 'Handpicked',
+        },
+        {
           name: 'featuredHeading',
           type: 'text',
           defaultValue: 'Featured Products',
@@ -83,6 +91,21 @@ export const HomePage: GlobalConfig = {
             description: 'Short paragraph under the section heading.',
           },
           maxLength: 300,
+        },
+        {
+          name: 'featuredProducts',
+          type: 'relationship',
+          admin: {
+            description:
+              'Pick the products to feature, and drag to reorder — the homepage shows them in this order. Leave empty to fall back to every product ticked "Featured" on its own page.',
+          },
+          filterOptions: () => ({
+            // A draft product would 404 for shoppers, so it should not be
+            // offered as something to put on the homepage.
+            _status: { equals: 'published' },
+          }),
+          hasMany: true,
+          relationTo: 'products',
         },
       ],
       label: 'Featured section',
