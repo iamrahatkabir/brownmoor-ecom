@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import { Spinner } from '@/components/Spinner'
 import { QuantityStepper } from '@/components/cart/QuantityStepper'
 import { useCartLine } from '@/components/cart/useCartLine'
 import { formatBDT } from '@/lib/price'
@@ -70,6 +71,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
     <QuantityStepper
       disabled={isPending}
       max={stock}
+      pending={isPending}
       onDecrement={decrement}
       onIncrement={increment}
       quantity={quantity}
@@ -83,7 +85,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
       onClick={() => add()}
       type="button"
     >
-      {soldOut ? 'Sold out' : 'Add to cart'}
+      {isPending ? <Spinner className="mx-auto h-4 w-4" /> : soldOut ? 'Sold out' : 'Add to cart'}
     </button>
   )
 
@@ -163,7 +165,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
               }}
               type="button"
             >
-              Buy now
+              {isPending ? <Spinner className="h-4 w-4" /> : 'Buy now'}
             </button>
           )}
         </div>

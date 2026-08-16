@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCallback, useState, useSyncExternalStore } from 'react'
 
+import { Spinner } from '@/components/Spinner'
 import { QuantityStepper } from '@/components/cart/QuantityStepper'
 import { useCartLine } from '@/components/cart/useCartLine'
 import { CloseIcon } from '@/components/icons'
@@ -77,6 +78,7 @@ function OrderLine({ line }: { line: Line }) {
             className="h-8"
             disabled={isPending}
             max={stock}
+            pending={isPending}
             onDecrement={decrement}
             onIncrement={increment}
             quantity={quantity}
@@ -409,7 +411,14 @@ export function CheckoutView() {
             onClick={placeOrder}
             type="button"
           >
-            {submitting ? 'Placing order…' : 'Place order'}
+            {submitting ? (
+              <span className="flex items-center gap-2">
+                <Spinner className="h-4 w-4" />
+                Placing order…
+              </span>
+            ) : (
+              'Place order'
+            )}
           </button>
         </aside>
       </div>

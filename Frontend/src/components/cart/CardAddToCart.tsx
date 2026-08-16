@@ -1,5 +1,7 @@
 'use client'
 
+import { Spinner } from '@/components/Spinner'
+
 import { QuantityStepper } from './QuantityStepper'
 import { useCartLine } from './useCartLine'
 
@@ -26,6 +28,7 @@ export function CardAddToCart({
       <QuantityStepper
         className="h-9 md:h-10"
         disabled={isPending}
+        pending={isPending}
         max={stock}
         onDecrement={decrement}
         onIncrement={increment}
@@ -41,7 +44,9 @@ export function CardAddToCart({
       onClick={() => add()}
       type="button"
     >
-      Add to cart
+      {/* The label is swapped rather than sitting beside the spinner, so the
+          button does not change width mid-press. */}
+      {isPending ? <Spinner className="mx-auto h-4 w-4" /> : 'Add to cart'}
     </button>
   )
 }

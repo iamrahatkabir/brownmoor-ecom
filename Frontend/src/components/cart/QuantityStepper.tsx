@@ -1,5 +1,6 @@
 'use client'
 
+import { Spinner } from '@/components/Spinner'
 import { MinusIcon, PlusIcon, TrashIcon } from '@/components/icons'
 
 /**
@@ -15,11 +16,13 @@ export function QuantityStepper({
   max,
   onDecrement,
   onIncrement,
+  pending = false,
   quantity,
 }: {
   className?: string
   disabled?: boolean
   max?: number
+  pending?: boolean
   onDecrement: () => void
   onIncrement: () => void
   quantity: number
@@ -38,8 +41,10 @@ export function QuantityStepper({
         {quantity <= 1 ? <TrashIcon className="h-4 w-4" /> : <MinusIcon className="h-4 w-4" />}
       </button>
 
+      {/* Occupies the count's place so the two buttons do not shift while a
+          change is saving. */}
       <span aria-live="polite" className="text-sm font-medium tabular-nums">
-        {quantity}
+        {pending ? <Spinner className="h-3.5 w-3.5" /> : quantity}
       </span>
 
       <button

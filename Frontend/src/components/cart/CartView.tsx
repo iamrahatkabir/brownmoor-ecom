@@ -107,6 +107,7 @@ function CartRow({ line }: { line: Line }) {
                 className="h-9 w-28"
                 disabled={isPending}
                 max={stock}
+                pending={isPending}
                 onDecrement={decrement}
                 onIncrement={increment}
                 quantity={quantity}
