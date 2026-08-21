@@ -22,9 +22,6 @@ export function ProductCard({ product, priority = false }: { product: Product; p
   const soldOut = stock <= 0
   const needsOptions = Boolean(product.enableVariants)
   const href = `/product/${product.slug}`
-  // Product pages open in their own tab, so a shopper browsing a grid does not
-  // lose their place. rel is required with target to avoid opener access.
-  const newTab = { rel: 'noopener', target: '_blank' as const }
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-lg border border-line bg-paper transition-colors hover:border-ink">
@@ -41,7 +38,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
           </span>
         )}
 
-        <Link href={href} {...newTab}>
+        <Link href={href}>
           {src ? (
             <Image
               alt={image?.alt || product.title}
@@ -66,7 +63,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
         {/* Fixed two-line height keeps buttons aligned across a row whether a
             title wraps to one line or two. */}
         <h3 className="line-clamp-2-fixed min-h-[2.25rem] text-[13px] leading-[1.35] text-ink md:min-h-[2.6rem] md:leading-[1.45] md:text-sm">
-          <Link className="hover:underline" href={href} {...newTab}>
+          <Link className="hover:underline" href={href}>
             {product.title}
           </Link>
         </h3>
@@ -103,7 +100,6 @@ export function ProductCard({ product, priority = false }: { product: Product; p
                 : 'bg-ink text-paper hover:bg-muted'
             }`}
             href={href}
-            {...newTab}
           >
             {soldOut ? 'Sold out' : 'Select options'}
           </Link>
