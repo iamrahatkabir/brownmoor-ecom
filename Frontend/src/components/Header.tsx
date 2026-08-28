@@ -1,6 +1,6 @@
 import Image from 'next/image'
-import Link from 'next/link'
 
+import { Link } from '@/components/Link'
 import { CONTACT } from '@/lib/contact'
 import type { CategoryTree } from '@/lib/types'
 

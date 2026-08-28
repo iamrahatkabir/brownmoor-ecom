@@ -1,5 +1,5 @@
-import Link from 'next/link'
 
+import { Link } from '@/components/Link'
 import { Pagination } from '@/components/Pagination'
 import { ProductCard } from '@/components/ProductCard'
 import type { Product } from '@/lib/types'

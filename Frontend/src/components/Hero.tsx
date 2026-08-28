@@ -1,6 +1,6 @@
 import Image from 'next/image'
-import Link from 'next/link'
 
+import { Link } from '@/components/Link'
 import { mediaURL } from '@/lib/payload'
 import type { HomePageGlobal } from '@/lib/types'
 

@@ -1,5 +1,5 @@
-import Link from 'next/link'
 
+import { Link } from '@/components/Link'
 import type { CategoryTree } from '@/lib/types'
 
 import { ChevronDownIcon } from './icons'

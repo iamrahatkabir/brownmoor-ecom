@@ -1,6 +1,6 @@
 import Image from 'next/image'
-import Link from 'next/link'
 
+import { Link } from '@/components/Link'
 import { CardAddToCart } from '@/components/cart/CardAddToCart'
 import { firstImage, mediaURL } from '@/lib/payload'
 import { formatBDT, stockLevel, summarisePrice } from '@/lib/price'

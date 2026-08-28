@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
+import { Link } from '@/components/Link'
 import { ProductCard } from '@/components/ProductCard'
 import { Gallery } from '@/components/product/Gallery'
 import { ProductBuyBox } from '@/components/product/ProductBuyBox'

@@ -1,6 +1,5 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Spinner } from '@/components/Spinner'
@@ -18,7 +17,6 @@ const resolveVariants = (product: Product): Variant[] =>
     .sort((a, b) => (a.priceInBDT ?? 0) - (b.priceInBDT ?? 0))
 
 export function ProductBuyBox({ product }: { product: Product }) {
-  const router = useRouter()
   const variants = useMemo(() => resolveVariants(product), [product])
   const hasVariants = Boolean(product.enableVariants && variants.length > 0)
 
@@ -187,7 +185,10 @@ export function ProductBuyBox({ product }: { product: Product }) {
                 await add()
                 // Left set on purpose: the spinner stays until the cart page
                 // takes over, rather than flicking back to the label first.
-                router.push('/cart')
+                // Full page load on purpose — the storefront navigates like a traditional
+                // site, so this must not become a client-side transition. See components/Link.
+                // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+                window.location.assign('/cart')
               }}
               type="button"
             >

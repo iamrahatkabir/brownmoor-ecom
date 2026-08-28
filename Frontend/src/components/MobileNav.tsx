@@ -1,8 +1,8 @@
 'use client'
 
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
+import { Link } from '@/components/Link'
 import type { CategoryTree } from '@/lib/types'
 
 import { CloseIcon, MenuIcon } from './icons'

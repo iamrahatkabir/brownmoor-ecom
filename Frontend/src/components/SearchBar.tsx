@@ -1,10 +1,9 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
+import { Link } from '@/components/Link'
 import { Spinner } from '@/components/Spinner'
 import { SearchIcon } from '@/components/icons'
 import { formatBDT } from '@/lib/price'
@@ -32,7 +31,6 @@ export function SearchBar({
   className?: string
   onNavigate?: () => void
 }) {
-  const router = useRouter()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<Suggestion[]>([])
   const [open, setOpen] = useState(false)
@@ -100,7 +98,10 @@ export function SearchBar({
     if (query.trim().length >= MIN_QUERY) {
       setOpen(false)
       onNavigate?.()
-      router.push(`/search?q=${encodeURIComponent(query.trim())}`)
+      // Full page load on purpose — the storefront navigates like a traditional
+      // site, so this must not become a client-side transition. See components/Link.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+      window.location.assign(`/search?q=${encodeURIComponent(query.trim())}`)
     }
   }
 

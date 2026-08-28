@@ -1,4 +1,5 @@
-import Link from 'next/link'
+
+import { Link } from '@/components/Link'
 
 /**
  * Page links for a product listing.

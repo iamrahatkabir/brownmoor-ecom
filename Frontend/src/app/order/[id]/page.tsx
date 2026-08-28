@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
-import Link from 'next/link'
 
+import { Link } from '@/components/Link'
 import { CheckoutSteps } from '@/components/checkout/CheckoutSteps'
 import { CONTACT } from '@/lib/contact'
 

@@ -2,10 +2,9 @@
 
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useCallback, useState, useSyncExternalStore } from 'react'
 
+import { Link } from '@/components/Link'
 import { Spinner } from '@/components/Spinner'
 import { QuantityStepper } from '@/components/cart/QuantityStepper'
 import { useCartLine } from '@/components/cart/useCartLine'
@@ -81,7 +80,6 @@ function OrderLine({ line }: { line: Line }) {
 
 export function CheckoutView() {
   const { cart, clearCart } = useCart()
-  const router = useRouter()
 
   // useCart does not surface the id; useEcommerce does, but the cart document
   // already carries it and that avoids a second context read.
@@ -235,7 +233,10 @@ export function CheckoutView() {
       // they have already paid for.
       await clearCart()
 
-      router.push(`/order/${done.orderID}`)
+      // Full page load on purpose — the storefront navigates like a traditional
+      // site, so this must not become a client-side transition. See components/Link.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+      window.location.assign(`/order/${done.orderID}`)
     } catch (error) {
       setFailure(error instanceof Error ? error.message : 'Something went wrong. Please try again.')
       setSubmitting(false)

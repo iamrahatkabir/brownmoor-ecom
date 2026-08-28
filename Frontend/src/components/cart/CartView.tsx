@@ -2,9 +2,9 @@
 
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import Image from 'next/image'
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
+import { Link } from '@/components/Link'
 import { CloseIcon } from '@/components/icons'
 import { firstImage, mediaURL } from '@/lib/payload'
 import { formatBDT } from '@/lib/price'
