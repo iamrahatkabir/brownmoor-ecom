@@ -249,7 +249,22 @@ export function CheckoutView() {
       // The order owns its own snapshot of the items, so emptying the cart
       // cannot affect it — and leaving it full would show the shopper a basket
       // they have already paid for.
-      await clearCart()
+      //
+      // Not awaited. confirmOrder has already stamped purchasedAt on the cart
+      // server-side, so the basket is spent whether or not this request lands;
+      // waiting on it only adds a round trip after the order already exists.
+      // The local keys are cleared here so the next page cannot read back a
+      // cart that has been paid for.
+      void clearCart()
+
+      try {
+        window.localStorage.removeItem('brownmoor-cart')
+        window.localStorage.removeItem('brownmoor-cart_secret')
+        window.localStorage.removeItem('brownmoor-cart_count')
+      } catch {
+        // Blocked storage is survivable: the server has the cart marked
+        // purchased, so the provider starts a fresh one regardless.
+      }
 
       // Full page load on purpose — the storefront navigates like a traditional
       // site, so this must not become a client-side transition. See components/Link.

@@ -211,24 +211,28 @@ export const cashOnDeliveryAdapter = (props?: PaymentAdapterArgs): PaymentAdapte
           req,
         })
 
-        await payload.update({
-          id: cartID,
-          collection: cartsSlug as CollectionSlug,
-          data: {
-            purchasedAt: new Date().toISOString(),
-          },
-          req,
-        })
-
-        // Status stays `pending` on purpose — cash is collected at the door.
-        await payload.update({
-          id: transaction.id,
-          collection: transactionsSlug as CollectionSlug,
-          data: {
-            order: order.id,
-          },
-          req,
-        })
+        // Independent of each other, so they go together rather than one after
+        // the other. Two sequential writes to a database in another region is a
+        // round trip the shopper spends staring at a spinner.
+        await Promise.all([
+          payload.update({
+            id: cartID,
+            collection: cartsSlug as CollectionSlug,
+            data: {
+              purchasedAt: new Date().toISOString(),
+            },
+            req,
+          }),
+          // Status stays `pending` on purpose — cash is collected at the door.
+          payload.update({
+            id: transaction.id,
+            collection: transactionsSlug as CollectionSlug,
+            data: {
+              order: order.id,
+            },
+            req,
+          }),
+        ])
 
         return {
           message: 'Order placed. Payment will be collected on delivery.',

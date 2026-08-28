@@ -3,6 +3,7 @@ import { Geist } from 'next/font/google'
 
 import { CartProvider } from '@/components/CartProvider'
 import { FacebookPixel } from '@/components/FacebookPixel'
+import { FloatingWhatsApp } from '@/components/FloatingWhatsApp'
 import { GoogleAnalytics } from '@/components/GoogleAnalytics'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
@@ -44,6 +45,7 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
           <main className="flex-1">{children}</main>
           <Footer categories={categories} />
         </CartProvider>
+        <FloatingWhatsApp />
         <FacebookPixel />
         <GoogleAnalytics />
       </body>
