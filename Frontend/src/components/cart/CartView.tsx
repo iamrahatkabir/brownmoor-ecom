@@ -5,6 +5,8 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
 import { Link } from '@/components/Link'
+import { CartSkeleton } from '@/components/cart/CartSkeleton'
+import { useCartHydrated } from '@/components/cart/useCartHydrated'
 import { CloseIcon } from '@/components/icons'
 import { firstImage, mediaURL } from '@/lib/payload'
 import { formatBDT } from '@/lib/price'
@@ -144,6 +146,7 @@ function CartRow({ line }: { line: Line }) {
 
 export function CartView() {
   const { cart } = useCart()
+  const hydrated = useCartHydrated()
   const [zoneId, setZoneId] = useState(DEFAULT_ZONE.id)
 
   // Checkout no longer asks for a district, so the choice made here is the one
@@ -162,6 +165,13 @@ export function CartView() {
     const { compareAt, price } = linePricing(line)
     return compareAt ? total + (compareAt - price) * line.quantity : total
   }, 0)
+
+  // The cart lives in the browser, so on a fresh page load it arrives after
+  // the first paint. Showing the skeleton until then stops the empty state
+  // flashing in front of a shopper who does have items.
+  if (!hydrated) {
+    return <CartSkeleton />
+  }
 
   if (lines.length === 0) {
     return (

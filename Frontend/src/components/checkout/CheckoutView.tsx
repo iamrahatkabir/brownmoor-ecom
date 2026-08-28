@@ -7,6 +7,8 @@ import { useCallback, useState, useSyncExternalStore } from 'react'
 import { Link } from '@/components/Link'
 import { Spinner } from '@/components/Spinner'
 import { QuantityStepper } from '@/components/cart/QuantityStepper'
+import { useCartHydrated } from '@/components/cart/useCartHydrated'
+import { CheckoutSkeleton } from '@/components/checkout/CheckoutSkeleton'
 import { useCartLine } from '@/components/cart/useCartLine'
 import { firstImage, mediaURL } from '@/lib/payload'
 import { formatBDT } from '@/lib/price'
@@ -80,6 +82,7 @@ function OrderLine({ line }: { line: Line }) {
 
 export function CheckoutView() {
   const { cart, clearCart } = useCart()
+  const hydrated = useCartHydrated()
 
   // useCart does not surface the id; useEcommerce does, but the cart document
   // already carries it and that avoids a second context read.
@@ -241,6 +244,12 @@ export function CheckoutView() {
       setFailure(error instanceof Error ? error.message : 'Something went wrong. Please try again.')
       setSubmitting(false)
     }
+  }
+
+  // Same reason as the cart page: wait for the browser-held cart rather than
+  // telling a shopper there is nothing to check out.
+  if (!hydrated) {
+    return <CheckoutSkeleton />
   }
 
   if (lines.length === 0) {

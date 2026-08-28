@@ -32,7 +32,11 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
 
   return (
     <html className={`${geistSans.variable} h-full antialiased`} lang="en">
-      <body className="flex min-h-full flex-col">
+      {/* Browser extensions (ColorZilla, password managers, translators) add
+          their own attributes to <body> before React hydrates, which reads as
+          a mismatch. This silences that for this element's own attributes; it
+          does not extend to children, so real mismatches still surface. */}
+      <body className="flex min-h-full flex-col" suppressHydrationWarning>
         <CartProvider>
           <Header categories={categories} />
           <main className="flex-1">{children}</main>

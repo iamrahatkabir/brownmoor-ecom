@@ -5,6 +5,7 @@ import type { CollectionOverride } from '@payloadcms/plugin-ecommerce/types'
 import { compareAtPriceField } from '../fields/compareAtPrice'
 import { weightField } from '../fields/weight'
 import { slugField } from '../fields/slugField'
+import { pruneCartItems } from '../hooks/pruneCartItems'
 
 /**
  * The plugin's products collection ships only the commerce machinery — prices,
@@ -20,6 +21,12 @@ export const productsCollectionOverride: CollectionOverride = ({ defaultCollecti
     ...defaultCollection.admin,
     defaultColumns: ['title', 'categories', 'prices', '_status'],
     useAsTitle: 'title',
+  },
+  hooks: {
+    ...defaultCollection.hooks,
+    // A product sitting in someone's cart has to be lifted out before it goes,
+    // or the cart is left holding a line it can never resolve.
+    beforeDelete: [...(defaultCollection.hooks?.beforeDelete ?? []), pruneCartItems],
   },
   fields: [
     {
