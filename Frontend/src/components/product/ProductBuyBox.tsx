@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Spinner } from '@/components/Spinner'
 import { QuantityStepper } from '@/components/cart/QuantityStepper'
 import { useCartLine } from '@/components/cart/useCartLine'
-import { formatBDT } from '@/lib/price'
+import { formatBDT, variantLabel } from '@/lib/price'
 import type { Product, Variant } from '@/lib/types'
 
 /** Variants come back as ids or documents depending on query depth. */
@@ -131,8 +131,8 @@ export function ProductBuyBox({ product }: { product: Product }) {
             <span className="text-lg text-faint">Price on request</span>
           )}
 
-          {hasVariants && selected?.options?.[0] && (
-            <span className="text-sm text-muted">{selected.options[0].label}</span>
+          {hasVariants && selected && variantLabel(selected) && (
+            <span className="text-sm text-muted">{variantLabel(selected)}</span>
           )}
         </div>
 
@@ -155,7 +155,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
                     onClick={() => setVariantId(variant.id)}
                     type="button"
                   >
-                    <span className="text-sm">{variant.options?.[0]?.label ?? variant.title}</span>
+                    <span className="text-sm">{variantLabel(variant)}</span>
                     <span className="mt-0.5 text-xs text-muted">
                       {typeof variant.priceInBDT === 'number'
                         ? formatBDT(variant.priceInBDT)

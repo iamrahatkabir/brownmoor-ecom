@@ -5,6 +5,19 @@ import type { Product, Variant } from './types'
  * ৳2,450.00. Formatting happens here and nowhere else, so a stray `/100` can't
  * quietly ship a price that is 100× wrong.
  */
+/**
+ * What to call a variant on screen.
+ *
+ * Prefers the label set on the variant itself. Older rows predate that field
+ * and carry a shop-wide option instead, and the title is the last resort, so a
+ * variant is never rendered as a blank space.
+ */
+export const variantLabel = (variant: {
+  label?: null | string
+  options?: Array<{ label: string }> | null
+  title?: null | string
+}): string => variant.label || variant.options?.[0]?.label || variant.title || ''
+
 export const formatBDT = (minorUnits: number): string => {
   const taka = minorUnits / 100
 

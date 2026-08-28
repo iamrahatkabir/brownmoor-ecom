@@ -33,6 +33,9 @@ export type Variant = {
   inventory?: number | null
   priceInBDT?: number | null
   compareAtPriceInBDT?: number | null
+  /** What the shopper picks — "500 ml", "24cm". Set per product. */
+  label?: null | string
+  /** The plugin's shop-wide options, no longer used but still present on older rows. */
   options?: Array<{ id: number; label: string; value: string }>
 }
 

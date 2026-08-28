@@ -2,7 +2,49 @@ import type { Where } from 'payload'
 
 import type { CollectionOverride } from '@payloadcms/plugin-ecommerce/types'
 
+import type { Field } from 'payload'
+
 import { compareAtPriceField } from '../fields/compareAtPrice'
+
+/**
+ * Reshapes the plugin's three variant fields on a product.
+ *
+ * Out of the box a product picks a *global* variant type before it may have any
+ * variants, so "500 ml" has to be defined shop-wide before one bottle can use
+ * it. Kitchenware sizes do not generalise that way — a 24cm pan and a 24cm
+ * saucepan share a number and nothing else — so the type picker is hidden and
+ * the variants table is shown as soon as variants are enabled.
+ *
+ * The table itself is the plugin's own join field: it lists this product's
+ * variants and offers Create, and is empty until one exists.
+ */
+const withProductVariantFields = (fields: Field[]): Field[] =>
+  fields.map((field) => {
+    if (!('name' in field)) {
+      return field
+    }
+
+    // Global types are not used; variants are created per product.
+    if (field.name === 'variantTypes') {
+      return { ...field, admin: { ...field.admin, hidden: true } } as Field
+    }
+
+    if (field.name === 'variants' && field.type === 'join') {
+      return {
+        ...field,
+        admin: {
+          ...field.admin,
+          // Ticking the box is enough. The plugin also required a variant type,
+          // which is the step being removed.
+          condition: ({ enableVariants }: { enableVariants?: boolean }) => Boolean(enableVariants),
+          defaultColumns: ['label', 'title', 'priceInBDT', 'inventory'],
+        },
+      } as Field
+    }
+
+    return field
+  })
+
 import { weightField } from '../fields/weight'
 import { slugField } from '../fields/slugField'
 import { pruneCartItems } from '../hooks/pruneCartItems'
@@ -72,7 +114,7 @@ export const productsCollectionOverride: CollectionOverride = ({ defaultCollecti
               minRows: 1,
             },
             // The plugin's fields: prices, inventory, and the variants setup.
-            ...defaultCollection.fields,
+            ...withProductVariantFields(defaultCollection.fields),
             // Sits after the plugin's price field so the two read together in
             // the admin. Only meaningful on products without variants —
             // variants carry their own compare-at price.

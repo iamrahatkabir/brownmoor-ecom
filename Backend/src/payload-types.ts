@@ -290,6 +290,8 @@ export interface Address {
   createdAt: string;
 }
 /**
+ * A product in one specific option, priced on its own. Created from the product page — enable variants there and a row appears for each option.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "variants".
  */
@@ -300,10 +302,14 @@ export interface Variant {
    */
   title?: string | null;
   product: number | Product;
-  options: (number | VariantOption)[];
+  options?: (number | VariantOption)[] | null;
   inventory?: number | null;
   priceInBDTEnabled?: boolean | null;
   priceInBDT?: number | null;
+  /**
+   * What the customer sees and picks — "500 ml", "1 litre", "24cm". This is the variant, as far as the shop is concerned.
+   */
+  label: string;
   /**
    * Original price, shown struck through. Leave empty when the product is not on sale.
    */
@@ -400,12 +406,20 @@ export interface Product {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * The kind of choice a customer makes, not the choices themselves. Create one per range — Size, Capacity, Colour — then add its values under Variant Options. A 500 ml and a 1 litre bottle are two options of one Capacity type, not two types.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "variantTypes".
  */
 export interface VariantType {
   id: number;
+  /**
+   * Shown to the customer above the choices, e.g. "Capacity".
+   */
   label: string;
+  /**
+   * Internal identifier, lower case and no spaces, e.g. "capacity".
+   */
   name: string;
   options?: {
     docs?: (number | VariantOption)[];
@@ -417,6 +431,8 @@ export interface VariantType {
   deletedAt?: string | null;
 }
 /**
+ * One value a customer can pick, belonging to a type — "500 ml" under Capacity, "24cm" under Size. Price and stock are set per product, on the variant, not here.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "variantOptions".
  */
@@ -808,6 +824,7 @@ export interface VariantsSelect<T extends boolean = true> {
   inventory?: T;
   priceInBDTEnabled?: T;
   priceInBDT?: T;
+  label?: T;
   compareAtPriceInBDT?: T;
   weightGrams?: T;
   updatedAt?: T;

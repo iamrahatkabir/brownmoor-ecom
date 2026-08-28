@@ -13,7 +13,7 @@ import { CheckoutSkeleton } from '@/components/checkout/CheckoutSkeleton'
 import { useCartLine } from '@/components/cart/useCartLine'
 import { firstImage, mediaURL } from '@/lib/payload'
 import { trackPurchase } from '@/lib/analytics'
-import { formatBDT } from '@/lib/price'
+import { formatBDT, variantLabel } from '@/lib/price'
 import { ZONE_STORAGE_KEY, zoneById } from '@/lib/shipping'
 import type { Product, Variant } from '@/lib/types'
 
@@ -61,8 +61,8 @@ function OrderLine({ line }: { line: Line }) {
 
       <div className="min-w-0 flex-1">
         <p className="text-sm leading-snug">{product.title}</p>
-        {variant?.options?.[0] && (
-          <p className="mt-0.5 text-xs text-muted">{variant.options[0].label}</p>
+        {variant && variantLabel(variant) && (
+          <p className="mt-0.5 text-xs text-muted">{variantLabel(variant)}</p>
         )}
         <div className="mt-2 w-28">
           <QuantityStepper

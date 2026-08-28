@@ -11,7 +11,7 @@ import { useCartHydrated } from '@/components/cart/useCartHydrated'
 import { CloseIcon } from '@/components/icons'
 import { firstImage, mediaURL } from '@/lib/payload'
 import { trackBeginCheckout } from '@/lib/analytics'
-import { formatBDT } from '@/lib/price'
+import { formatBDT, variantLabel } from '@/lib/price'
 import { DEFAULT_ZONE, SHIPPING_ZONES, ZONE_STORAGE_KEY } from '@/lib/shipping'
 import type { Product, Variant } from '@/lib/types'
 
@@ -93,8 +93,8 @@ function CartRow({ line }: { line: Line }) {
         <Link className="text-sm font-medium leading-snug hover:underline" href={href}>
           {product.title}
         </Link>
-        {variant?.options?.[0] && (
-          <p className="mt-1 text-xs text-muted">{variant.options[0].label}</p>
+        {variant && variantLabel(variant) && (
+          <p className="mt-1 text-xs text-muted">{variantLabel(variant)}</p>
         )}
 
         {/* Stacked labels on mobile; on desktop these live in their own

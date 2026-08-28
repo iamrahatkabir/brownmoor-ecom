@@ -191,6 +191,9 @@ const seed = async (payload: Payload): Promise<void> => {
         data: {
           _status: 'published',
           inventory: variant.stock,
+          // What the shopper picks. The shop-wide option is still written so the
+          // demo data exercises both shapes, but the label is what renders.
+          label: variant.option,
           options: [optionId],
           priceInBDT: taka(variant.price),
           priceInBDTEnabled: true,
