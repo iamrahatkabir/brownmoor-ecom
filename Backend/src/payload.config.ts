@@ -21,7 +21,11 @@ import { Media } from './collections/Media'
 import { ordersCollectionOverride } from './collections/Orders'
 import { productsCollectionOverride } from './collections/Products'
 import { Users } from './collections/Users'
-import { variantsCollectionOverride } from './collections/Variants'
+import {
+  variantOptionsCollectionOverride,
+  variantsCollectionOverride,
+  variantTypesCollectionOverride,
+} from './collections/Variants'
 import { currenciesConfig } from './currencies'
 import { HomePage } from './globals/HomePage'
 import { ShippingSettings } from './globals/ShippingSettings'
@@ -118,7 +122,9 @@ export default buildConfig({
       products: {
         productsCollectionOverride,
         variants: {
+          variantOptionsCollectionOverride,
           variantsCollectionOverride,
+          variantTypesCollectionOverride,
         },
       },
       transactions: true,

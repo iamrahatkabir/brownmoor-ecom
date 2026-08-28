@@ -10,7 +10,8 @@
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "OrderStatus".
  */
-export type OrderStatus = ('processing' | 'completed' | 'cancelled' | 'refunded') | null;
+export type OrderStatus =
+  ('processing' | 'confirmed' | 'in-office' | 'send-to-courier' | 'delivered' | 'cancelled' | 'returned') | null;
 /**
  * Supported timezones in IANA format.
  *
@@ -469,6 +470,12 @@ export interface Order {
         id?: string | null;
       }[]
     | null;
+  customer?: (number | null) | User;
+  customerEmail?: string | null;
+  transactions?: (number | Transaction)[] | null;
+  status?: OrderStatus;
+  amount?: number | null;
+  currency?: 'BDT' | null;
   shippingAddress: {
     title?: string | null;
     firstName?: string | null;
@@ -485,12 +492,6 @@ export interface Order {
      */
     phone: string;
   };
-  customer?: (number | null) | User;
-  customerEmail?: string | null;
-  transactions?: (number | Transaction)[] | null;
-  status?: OrderStatus;
-  amount?: number | null;
-  currency?: 'BDT' | null;
   /**
    * Delivery charge at the time of ordering. Included in the order total.
    */
@@ -913,6 +914,12 @@ export interface OrdersSelect<T extends boolean = true> {
         quantity?: T;
         id?: T;
       };
+  customer?: T;
+  customerEmail?: T;
+  transactions?: T;
+  status?: T;
+  amount?: T;
+  currency?: T;
   shippingAddress?:
     | T
     | {
@@ -928,12 +935,6 @@ export interface OrdersSelect<T extends boolean = true> {
         country?: T;
         phone?: T;
       };
-  customer?: T;
-  customerEmail?: T;
-  transactions?: T;
-  status?: T;
-  amount?: T;
-  currency?: T;
   shippingAmount?: T;
   shippingZone?: T;
   totalWeightGrams?: T;
