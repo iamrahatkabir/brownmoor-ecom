@@ -6,6 +6,7 @@ import { useCallback, useState, useSyncExternalStore } from 'react'
 
 import { Link } from '@/components/Link'
 import { Spinner } from '@/components/Spinner'
+import { StickyAction } from '@/components/StickyAction'
 import { QuantityStepper } from '@/components/cart/QuantityStepper'
 import { useCartHydrated } from '@/components/cart/useCartHydrated'
 import { CheckoutSkeleton } from '@/components/checkout/CheckoutSkeleton'
@@ -306,8 +307,19 @@ export function CheckoutView() {
     </div>
   )
 
+  const placeOrderButton = (className: string) => (
+    <button className={className} disabled={submitting} onClick={placeOrder} type="button">
+      {/* The button is the flex container, so the spinner and label sit
+          centred together. A flex wrapper inside a text-centred button
+          stretches full width and pushes both to the left. */}
+      {submitting && <Spinner className="h-4 w-4" />}
+      {submitting ? 'Placing order…' : 'Place order'}
+    </button>
+  )
+
   return (
-    <div className="mx-auto max-w-[1280px] px-4 py-8 md:py-12">
+    // Bottom padding leaves room for the sticky bar on a phone.
+    <div className="mx-auto max-w-[1280px] px-4 py-8 pb-28 md:py-12 md:pb-12">
       <div className="grid gap-10 lg:grid-cols-[1fr_440px] lg:gap-14">
         <section>
           <h1 className="text-lg font-semibold tracking-tight md:text-2xl">Billing details</h1>
@@ -433,20 +445,17 @@ export function CheckoutView() {
             </p>
           )}
 
-          <button
-            className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-ink text-[11px] tracked text-paper transition-colors hover:bg-muted disabled:opacity-60"
-            disabled={submitting}
-            onClick={placeOrder}
-            type="button"
-          >
-            {/* The button is the flex container, so the spinner and label sit
-                centred together. A flex wrapper inside a text-centred button
-                stretches full width and pushes both to the left. */}
-            {submitting && <Spinner className="h-4 w-4" />}
-            {submitting ? 'Placing order…' : 'Place order'}
-          </button>
+          {placeOrderButton(
+            'mt-5 hidden h-12 w-full items-center justify-center gap-2 rounded-lg bg-ink text-[11px] tracked text-paper transition-colors hover:bg-muted disabled:opacity-60 md:flex',
+          )}
         </aside>
       </div>
+
+      <StickyAction>
+        {placeOrderButton(
+          'flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-ink text-[11px] tracked text-paper transition-colors hover:bg-muted disabled:opacity-60',
+        )}
+      </StickyAction>
     </div>
   )
 }

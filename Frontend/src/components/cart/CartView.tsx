@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
 import { Link } from '@/components/Link'
+import { StickyAction } from '@/components/StickyAction'
 import { CartSkeleton } from '@/components/cart/CartSkeleton'
 import { useCartHydrated } from '@/components/cart/useCartHydrated'
 import { CloseIcon } from '@/components/icons'
@@ -188,8 +189,27 @@ export function CartView() {
     )
   }
 
+  const beginCheckout = () =>
+    trackBeginCheckout(
+      lines.map((line) => ({
+        id: String(asProduct(line.product)?.id ?? ''),
+        name: asProduct(line.product)?.title,
+        price: linePricing(line).price,
+        quantity: line.quantity,
+      })),
+      subtotal,
+    )
+
+  const checkoutButton = (className: string) => (
+    <Link className={className} href="/checkout" onClick={beginCheckout}>
+      Proceed to checkout
+    </Link>
+  )
+
   return (
-    <div className="mx-auto max-w-[1280px] px-4 py-8 md:py-12">
+    // Bottom padding leaves room for the sticky bar on a phone, so the last
+    // row is not trapped behind it.
+    <div className="mx-auto max-w-[1280px] px-4 py-8 pb-28 md:py-12 md:pb-12">
       <div className="grid gap-10 lg:grid-cols-[1fr_360px] lg:gap-12">
         <div>
           {/* Column headings belong to the desktop table only. */}
@@ -255,29 +275,21 @@ export function CartView() {
             </p>
           )}
 
-          <Link
-            className="mt-5 flex h-12 w-full items-center justify-center rounded-lg bg-ink text-[11px] tracked text-paper transition-colors hover:bg-muted"
-            href="/checkout"
-            onClick={() =>
-              trackBeginCheckout(
-                lines.map((line) => ({
-                  id: String(asProduct(line.product)?.id ?? ''),
-                  name: asProduct(line.product)?.title,
-                  price: linePricing(line).price,
-                  quantity: line.quantity,
-                })),
-                subtotal,
-              )
-            }
-          >
-            Proceed to checkout
-          </Link>
+          {checkoutButton(
+            'mt-5 hidden h-12 w-full items-center justify-center rounded-lg bg-ink text-[11px] tracked text-paper transition-colors hover:bg-muted md:flex',
+          )}
 
           <p className="mt-3 text-center text-xs text-muted">
             Delivery charge is confirmed at checkout.
           </p>
         </aside>
       </div>
+
+      <StickyAction>
+        {checkoutButton(
+          'flex h-12 w-full items-center justify-center rounded-lg bg-ink text-[11px] tracked text-paper transition-colors hover:bg-muted',
+        )}
+      </StickyAction>
     </div>
   )
 }

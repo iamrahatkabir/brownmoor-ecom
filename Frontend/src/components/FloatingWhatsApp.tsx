@@ -22,7 +22,13 @@ export function FloatingWhatsApp() {
       className="fixed bottom-4 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink md:bottom-6 md:right-6 md:h-14 md:w-14"
       href={CONTACT.whatsapp.url}
       rel="noopener noreferrer"
-      style={{ bottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+      // Lifts above the sticky action bar on cart and checkout, which
+      // publishes its height; elsewhere the variable is absent and the
+      // fallback keeps it in the corner.
+      style={{
+        bottom:
+          'calc(max(1rem, env(safe-area-inset-bottom)) + var(--sticky-action-height, 0px))',
+      }}
       target="_blank"
     >
       <WhatsAppIcon className="h-6 w-6 md:h-7 md:w-7" />
