@@ -49,6 +49,12 @@ export default buildConfig({
   serverURL,
   admin: {
     user: Users.slug,
+    components: {
+      // Renders nothing itself; it portals a count of unworked orders into the
+      // Orders link. Payload offers no per-collection nav badge, and this slot
+      // is the supported way in.
+      afterNavLinks: ['@/components/ProcessingOrdersBadge#ProcessingOrdersBadge'],
+    },
     importMap: {
       baseDir: path.resolve(dirname),
     },
