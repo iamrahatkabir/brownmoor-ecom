@@ -42,11 +42,26 @@ export function useCartLine(
    */
   const [isPending, setIsPending] = useState(false)
 
+  /**
+   * What the shopper just asked for, shown before the server has agreed.
+   *
+   * Adding costs a write plus a refetch — around a second locally and several
+   * over a real connection to the database's region. Waiting on that leaves a
+   * spinner where the shopper expects an answer, so the control updates at once
+   * and the server's version replaces it when it lands.
+   */
+  const [optimistic, setOptimistic] = useState<null | number>(null)
+
   const run = useCallback(async (action: () => Promise<unknown> | undefined) => {
     setIsPending(true)
 
     try {
       await action()
+    } catch (error) {
+      // The guess was wrong, so drop it and let the real cart show through
+      // rather than leaving a quantity that was never saved.
+      setOptimistic(null)
+      throw error
     } finally {
       // Always clears, unconditionally. An earlier version guarded this with a
       // mounted ref whose cleanup ran under Strict Mode's double-invoke and was
@@ -54,6 +69,9 @@ export function useCartLine(
       // good. React 18 dropped the unmounted-setState warning that guard was
       // for, so there is nothing to protect against.
       setIsPending(false)
+      // The provider refetches the cart before addItem resolves, so by now the
+      // real quantity is in place and the guess can be retired.
+      setOptimistic(null)
     }
   }, [])
 
@@ -68,11 +86,14 @@ export function useCartLine(
     )
   }, [cart, productId, variantId])
 
-  const quantity = line?.quantity ?? 0
+  const serverQuantity = line?.quantity ?? 0
+  const quantity = optimistic ?? serverQuantity
 
   const add = useCallback(
-    () =>
-      run(async () => {
+    () => {
+      setOptimistic(serverQuantity + 1)
+
+      return run(async () => {
         await addItem({ product: productId, ...(variantId ? { variant: variantId } : {}) })
 
         // After the add succeeds, so a failed request is not reported as a
@@ -81,15 +102,18 @@ export function useCartLine(
           [{ id: String(variantId ?? productId), price: trackingValue }],
           trackingValue,
         )
-      }),
-    [addItem, productId, run, trackingValue, variantId],
+      })
+    },
+    [addItem, productId, run, serverQuantity, trackingValue, variantId],
   )
 
   const increment = useCallback(() => {
     if (line?.id) {
+      setOptimistic(serverQuantity + 1)
+
       return run(() => incrementItem(line.id!))
     }
-  }, [incrementItem, line, run])
+  }, [incrementItem, line, run, serverQuantity])
 
   /** At one, the next step down empties the line rather than decrementing it. */
   const decrement = useCallback(() => {
@@ -97,8 +121,10 @@ export function useCartLine(
       return
     }
 
+    setOptimistic(Math.max(0, serverQuantity - 1))
+
     return run(() => (quantity <= 1 ? removeItem(line.id!) : decrementItem(line.id!)))
-  }, [decrementItem, line, quantity, removeItem, run])
+  }, [decrementItem, line, quantity, removeItem, run, serverQuantity])
 
   return { add, decrement, increment, inCart: quantity > 0, isPending, quantity }
 }
