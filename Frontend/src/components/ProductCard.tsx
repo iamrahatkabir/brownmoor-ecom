@@ -104,7 +104,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
             {soldOut ? 'Sold out' : 'Select options'}
           </Link>
         ) : (
-          <CardAddToCart productId={product.id} stock={stock} />
+          <CardAddToCart productId={product.id} stock={stock} value={price.amount} />
         )}
       </div>
     </article>

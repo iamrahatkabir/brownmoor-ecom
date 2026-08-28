@@ -42,6 +42,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
   const { add, decrement, inCart, increment, isPending, quantity } = useCartLine(
     product.id,
     hasVariants ? variantId : undefined,
+    price,
   )
 
   /**

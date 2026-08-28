@@ -17,11 +17,18 @@ import { useCartLine } from './useCartLine'
 export function CardAddToCart({
   productId,
   stock,
+  value,
 }: {
   productId: number
   stock: number
+  /** Unit price in poisha, passed to the pixel's AddToCart event. */
+  value?: null | number
 }) {
-  const { add, decrement, inCart, increment, isPending, quantity } = useCartLine(productId)
+  const { add, decrement, inCart, increment, isPending, quantity } = useCartLine(
+    productId,
+    undefined,
+    value,
+  )
 
   if (inCart) {
     return (

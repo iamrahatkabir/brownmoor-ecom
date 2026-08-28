@@ -9,6 +9,7 @@ import { CartSkeleton } from '@/components/cart/CartSkeleton'
 import { useCartHydrated } from '@/components/cart/useCartHydrated'
 import { CloseIcon } from '@/components/icons'
 import { firstImage, mediaURL } from '@/lib/payload'
+import { toTaka, trackPixel } from '@/lib/pixel'
 import { formatBDT } from '@/lib/price'
 import { DEFAULT_ZONE, SHIPPING_ZONES, ZONE_STORAGE_KEY } from '@/lib/shipping'
 import type { Product, Variant } from '@/lib/types'
@@ -257,6 +258,15 @@ export function CartView() {
           <Link
             className="mt-5 flex h-12 w-full items-center justify-center rounded-lg bg-ink text-[11px] tracked text-paper transition-colors hover:bg-muted"
             href="/checkout"
+            onClick={() =>
+              trackPixel('InitiateCheckout', {
+                content_ids: lines.map((line) => String(asProduct(line.product)?.id ?? '')),
+                content_type: 'product',
+                currency: 'BDT',
+                num_items: lines.reduce((total, line) => total + line.quantity, 0),
+                value: toTaka(subtotal),
+              })
+            }
           >
             Proceed to checkout
           </Link>

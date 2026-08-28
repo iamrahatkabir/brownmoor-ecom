@@ -3,6 +3,8 @@
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import { useCallback, useMemo, useState } from 'react'
 
+import { toTaka, trackPixel } from '@/lib/pixel'
+
 type CartLine = {
   id?: string
   product: { id: number } | number
@@ -21,7 +23,14 @@ const idOf = (value: { id: number } | number | undefined): number | undefined =>
  * into behaving differently — the rule that quantity 1 removes rather than
  * decrements lives here, not in each button.
  */
-export function useCartLine(productId: number, variantId?: number) {
+export function useCartLine(
+  productId: number,
+  variantId?: number,
+  /** Unit price in poisha, so AddToCart can carry a value. Optional: the
+   *  quantity steppers on the cart page have no product context and do not
+   *  report an add. */
+  trackingValue?: null | number,
+) {
   const { addItem, cart, decrementItem, incrementItem, removeItem } = useCart()
 
   /**
@@ -62,8 +71,20 @@ export function useCartLine(productId: number, variantId?: number) {
   const quantity = line?.quantity ?? 0
 
   const add = useCallback(
-    () => run(() => addItem({ product: productId, ...(variantId ? { variant: variantId } : {}) })),
-    [addItem, productId, run, variantId],
+    () =>
+      run(async () => {
+        await addItem({ product: productId, ...(variantId ? { variant: variantId } : {}) })
+
+        // After the add succeeds, so a failed request is not reported as a
+        // conversion.
+        trackPixel('AddToCart', {
+          content_ids: [String(variantId ?? productId)],
+          content_type: 'product',
+          currency: 'BDT',
+          ...(typeof trackingValue === 'number' ? { value: toTaka(trackingValue) } : {}),
+        })
+      }),
+    [addItem, productId, run, trackingValue, variantId],
   )
 
   const increment = useCallback(() => {

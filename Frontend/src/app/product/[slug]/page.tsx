@@ -7,7 +7,9 @@ import { ProductCard } from '@/components/ProductCard'
 import { Gallery } from '@/components/product/Gallery'
 import { ProductBuyBox } from '@/components/product/ProductBuyBox'
 import { ProductTabs } from '@/components/product/ProductTabs'
+import { TrackViewContent } from '@/components/pixel/TrackViewContent'
 import { getProductBySlug, getRelatedProducts } from '@/lib/payload'
+import { summarisePrice } from '@/lib/price'
 import type { Category, Media, Product } from '@/lib/types'
 
 type Params = { params: Promise<{ slug: string }> }
@@ -88,6 +90,11 @@ export default async function ProductPage({ params }: Params) {
             )}
 
             <ProductBuyBox product={product} />
+            <TrackViewContent
+              id={product.id}
+              name={product.title}
+              value={summarisePrice(product).amount}
+            />
 
             <ul className="mt-6 space-y-2 rounded-lg border border-line bg-wash p-4 text-xs text-muted">
               <li>Cash on delivery available across Bangladesh.</li>
