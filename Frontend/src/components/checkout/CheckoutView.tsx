@@ -11,7 +11,7 @@ import { useCartHydrated } from '@/components/cart/useCartHydrated'
 import { CheckoutSkeleton } from '@/components/checkout/CheckoutSkeleton'
 import { useCartLine } from '@/components/cart/useCartLine'
 import { firstImage, mediaURL } from '@/lib/payload'
-import { toTaka, trackPixel } from '@/lib/pixel'
+import { trackPurchase } from '@/lib/analytics'
 import { formatBDT } from '@/lib/price'
 import { ZONE_STORAGE_KEY, zoneById } from '@/lib/shipping'
 import type { Product, Variant } from '@/lib/types'
@@ -235,13 +235,16 @@ export function CheckoutView() {
       // Reported here rather than on the confirmation page, which deliberately
       // does not fetch the order and so cannot know what it was worth. Value is
       // the grand total the courier collects, delivery included.
-      trackPixel('Purchase', {
-        content_ids: lines.map((line) => String(asProduct(line.product)?.id ?? '')),
-        content_type: 'product',
-        currency: 'BDT',
-        num_items: lines.reduce((count, line) => count + line.quantity, 0),
-        value: toTaka(total),
-      })
+      trackPurchase(
+        lines.map((line) => ({
+          id: String(asProduct(line.product)?.id ?? ''),
+          name: asProduct(line.product)?.title,
+          price: unitPrice(line),
+          quantity: line.quantity,
+        })),
+        total,
+        done.orderID,
+      )
 
       // The order owns its own snapshot of the items, so emptying the cart
       // cannot affect it — and leaving it full would show the shopper a basket

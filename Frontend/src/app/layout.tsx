@@ -3,6 +3,7 @@ import { Geist } from 'next/font/google'
 
 import { CartProvider } from '@/components/CartProvider'
 import { FacebookPixel } from '@/components/FacebookPixel'
+import { GoogleAnalytics } from '@/components/GoogleAnalytics'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { getCategoryTree } from '@/lib/payload'
@@ -44,6 +45,7 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
           <Footer categories={categories} />
         </CartProvider>
         <FacebookPixel />
+        <GoogleAnalytics />
       </body>
     </html>
   )

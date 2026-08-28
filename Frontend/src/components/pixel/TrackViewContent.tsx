@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 
-import { toTaka, trackPixel } from '@/lib/pixel'
+import { trackViewItem } from '@/lib/analytics'
 
 /**
  * Reports ViewContent for a product page.
@@ -20,13 +20,7 @@ export function TrackViewContent({
   value?: null | number
 }) {
   useEffect(() => {
-    trackPixel('ViewContent', {
-      content_ids: [String(id)],
-      content_name: name,
-      content_type: 'product',
-      currency: 'BDT',
-      ...(typeof value === 'number' ? { value: toTaka(value) } : {}),
-    })
+    trackViewItem([{ id: String(id), name, price: value }], value)
   }, [id, name, value])
 
   return null

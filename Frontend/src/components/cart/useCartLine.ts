@@ -3,7 +3,7 @@
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import { useCallback, useMemo, useState } from 'react'
 
-import { toTaka, trackPixel } from '@/lib/pixel'
+import { trackAddToCart } from '@/lib/analytics'
 
 type CartLine = {
   id?: string
@@ -77,12 +77,10 @@ export function useCartLine(
 
         // After the add succeeds, so a failed request is not reported as a
         // conversion.
-        trackPixel('AddToCart', {
-          content_ids: [String(variantId ?? productId)],
-          content_type: 'product',
-          currency: 'BDT',
-          ...(typeof trackingValue === 'number' ? { value: toTaka(trackingValue) } : {}),
-        })
+        trackAddToCart(
+          [{ id: String(variantId ?? productId), price: trackingValue }],
+          trackingValue,
+        )
       }),
     [addItem, productId, run, trackingValue, variantId],
   )

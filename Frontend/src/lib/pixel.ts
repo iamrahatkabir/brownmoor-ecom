@@ -18,15 +18,6 @@ declare global {
 }
 
 /**
- * Poisha to Taka.
- *
- * Every amount in this system is in the minor unit; Meta expects the major one.
- * Reporting 312000 instead of 3120 would inflate revenue a hundredfold and make
- * return on ad spend meaningless.
- */
-export const toTaka = (minorUnits: number): number => Math.round(minorUnits) / 100
-
-/**
  * Send a standard event.
  *
  * Silently does nothing when the pixel is absent or has not loaded yet — an
