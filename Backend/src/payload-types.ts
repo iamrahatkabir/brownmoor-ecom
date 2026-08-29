@@ -301,15 +301,15 @@ export interface Variant {
    * Used for administrative purposes, not shown to customers. This is populated by default.
    */
   title?: string | null;
+  /**
+   * What the customer sees and picks — "500 ml", "1 litre", "24cm". This is the variant, as far as the shop is concerned.
+   */
+  label: string;
   product: number | Product;
   options?: (number | VariantOption)[] | null;
   inventory?: number | null;
   priceInBDTEnabled?: boolean | null;
   priceInBDT?: number | null;
-  /**
-   * What the customer sees and picks — "500 ml", "1 litre", "24cm". This is the variant, as far as the shop is concerned.
-   */
-  label: string;
   /**
    * Original price, shown struck through. Leave empty when the product is not on sale.
    */
@@ -819,12 +819,12 @@ export interface AddressesSelect<T extends boolean = true> {
  */
 export interface VariantsSelect<T extends boolean = true> {
   title?: T;
+  label?: T;
   product?: T;
   options?: T;
   inventory?: T;
   priceInBDTEnabled?: T;
   priceInBDT?: T;
-  label?: T;
   compareAtPriceInBDT?: T;
   weightGrams?: T;
   updatedAt?: T;

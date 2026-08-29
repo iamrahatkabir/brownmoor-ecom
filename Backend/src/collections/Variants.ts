@@ -36,6 +36,17 @@ const HIDE_FROM_NAV = true
  * collection is out of the nav — a variant with no sight of its product is
  * meaningless.
  */
+/** What the shopper picks. Defined here so it can be slotted in after Title. */
+const labelField: Field = {
+  name: 'label',
+  type: 'text',
+  admin: {
+    description:
+      'What the customer sees and picks — "500 ml", "1 litre", "24cm". This is the variant, as far as the shop is concerned.',
+  },
+  required: true,
+}
+
 export const variantsCollectionOverride: CollectionOverride = ({ defaultCollection }) => ({
   ...defaultCollection,
   admin: {
@@ -48,33 +59,38 @@ export const variantsCollectionOverride: CollectionOverride = ({ defaultCollecti
     hidden: HIDE_FROM_NAV,
   },
   fields: [
-    // The plugin builds a variant out of shop-wide options. Those are not used
-    // here, so the field is optional and hidden rather than deleted: dropping
-    // it would drop the join table, and an existing variant may still point at
-    // an option row.
-    ...defaultCollection.fields.map((field) =>
-      'name' in field && field.name === 'options'
-        ? ({
+    /*
+     * Label sits directly after Title, because the two are read together: the
+     * title identifies the row for staff and the label is what the shopper
+     * picks. Appending it after the price fields, as the plugin's own field
+     * order would, split that pair across the form.
+     */
+    ...defaultCollection.fields.flatMap((field): Field[] => {
+      // The plugin builds a variant out of shop-wide options. Those are not
+      // used here, so the field is optional and hidden rather than deleted:
+      // dropping it would drop the join table, and an existing variant may
+      // still point at an option row.
+      if ('name' in field && field.name === 'options') {
+        return [
+          {
             ...field,
             admin: { ...field.admin, hidden: true },
             required: false,
             // The plugin attaches its own validator insisting on at least one
-            // option, and that runs whatever `required` says. Clearing `required`
-            // alone left every save failing on a field the panel does not show.
-            // Options are unused here, so there is nothing to validate.
+            // option, and that runs whatever `required` says. Clearing
+            // `required` alone left every save failing on a field the panel
+            // does not show. Options are unused, so there is nothing to check.
             validate: () => true,
-          } as Field)
-        : field,
-    ),
-    {
-      name: 'label',
-      type: 'text',
-      admin: {
-        description:
-          'What the customer sees and picks — "500 ml", "1 litre", "24cm". This is the variant, as far as the shop is concerned.',
-      },
-      required: true,
-    },
+          } as Field,
+        ]
+      }
+
+      if ('name' in field && field.name === 'title') {
+        return [field, labelField]
+      }
+
+      return [field]
+    }),
     compareAtPriceField(),
     weightField(),
   ],
