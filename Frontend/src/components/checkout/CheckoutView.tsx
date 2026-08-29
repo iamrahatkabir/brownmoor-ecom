@@ -14,7 +14,7 @@ import { useCartLine } from '@/components/cart/useCartLine'
 import { firstImage, mediaURL } from '@/lib/payload'
 import { trackPurchase } from '@/lib/analytics'
 import { formatBDT, variantLabel } from '@/lib/price'
-import { ZONE_STORAGE_KEY, zoneById } from '@/lib/shipping'
+import { SHIPPING_ZONES, ZONE_STORAGE_KEY, zoneById } from '@/lib/shipping'
 import type { Product, Variant } from '@/lib/types'
 
 type Line = {
@@ -124,9 +124,29 @@ export function CheckoutView() {
     () => null,
   )
 
-  const zone = zoneById(storedZoneId)
+  /**
+   * Chosen here now, rather than carried over from the cart. Delivery is a
+   * checkout decision — it belongs beside the address it depends on, not two
+   * pages earlier where the shopper has not said where they live.
+   *
+   * Storage still seeds the initial value, so anyone mid-journey when this
+   * changed keeps their previous choice, and null falls back to the default.
+   */
+  const [chosenZoneId, setChosenZoneId] = useState<null | string>(null)
+
+  const zone = zoneById(chosenZoneId ?? storedZoneId)
 
   const total = subtotal + zone.rate
+
+  const selectZone = (id: string) => {
+    setChosenZoneId(id)
+
+    try {
+      window.localStorage.setItem(ZONE_STORAGE_KEY, id)
+    } catch {
+      // Blocked storage only costs the shopper the memory of their choice.
+    }
+  }
 
   const set = (key: keyof typeof form) => (value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }))
@@ -414,11 +434,30 @@ export function CheckoutView() {
                 <dd>{formatBDT(subtotal)}</dd>
               </div>
 
-              <div className="flex items-center justify-between border-b border-line py-3">
+              <div className="border-b border-line py-3">
                 <dt className="font-medium">Shipment</dt>
-                <dd className="text-right">
-                  <span className="text-muted">{zone.label}: </span>
-                  <span className="font-medium">{formatBDT(zone.rate)}</span>
+                <dd className="mt-2.5 space-y-2.5">
+                  {SHIPPING_ZONES.map((option) => (
+                    <label
+                      className="flex cursor-pointer items-center justify-between"
+                      key={option.id}
+                    >
+                      <span className="flex items-center gap-2.5">
+                        <input
+                          checked={option.id === zone.id}
+                          className="h-4 w-4 accent-ink"
+                          name="shipping-zone"
+                          onChange={() => selectZone(option.id)}
+                          type="radio"
+                          value={option.id}
+                        />
+                        {option.label}
+                      </span>
+                      <span className={option.id === zone.id ? 'text-ink' : 'text-faint'}>
+                        {formatBDT(option.rate)}
+                      </span>
+                    </label>
+                  ))}
                 </dd>
               </div>
 

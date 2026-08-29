@@ -2,7 +2,6 @@
 
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
 
 import { Link } from '@/components/Link'
 import { StickyAction } from '@/components/StickyAction'
@@ -12,7 +11,6 @@ import { CloseIcon } from '@/components/icons'
 import { firstImage, mediaURL } from '@/lib/payload'
 import { trackBeginCheckout } from '@/lib/analytics'
 import { formatBDT, variantLabel } from '@/lib/price'
-import { DEFAULT_ZONE, SHIPPING_ZONES, ZONE_STORAGE_KEY } from '@/lib/shipping'
 import type { Product, Variant } from '@/lib/types'
 
 import { QuantityStepper } from './QuantityStepper'
@@ -149,16 +147,7 @@ function CartRow({ line }: { line: Line }) {
 export function CartView() {
   const { cart } = useCart()
   const hydrated = useCartHydrated()
-  const [zoneId, setZoneId] = useState(DEFAULT_ZONE.id)
-
-  // Checkout no longer asks for a district, so the choice made here is the one
-  // that decides the delivery charge. Persist it so the next page agrees.
-  useEffect(() => {
-    window.localStorage.setItem(ZONE_STORAGE_KEY, zoneId)
-  }, [zoneId])
-
   const lines = (cart?.items ?? []) as Line[]
-  const zone = SHIPPING_ZONES.find((z) => z.id === zoneId) ?? DEFAULT_ZONE
 
   const subtotal = lines.reduce((total, line) => total + linePricing(line).price * line.quantity, 0)
 
@@ -235,37 +224,12 @@ export function CartView() {
             <span className="text-sm">{formatBDT(subtotal)}</span>
           </div>
 
-          <fieldset className="border-b border-line py-4">
-            <legend className="text-sm font-medium">Shipment</legend>
-
-            <div className="mt-3 space-y-2.5">
-              {SHIPPING_ZONES.map((option) => (
-                <label
-                  className="flex cursor-pointer items-center justify-between text-sm"
-                  key={option.id}
-                >
-                  <span className="flex items-center gap-2.5">
-                    <input
-                      checked={option.id === zoneId}
-                      className="h-4 w-4 accent-ink"
-                      name="shipping-zone"
-                      onChange={() => setZoneId(option.id)}
-                      type="radio"
-                      value={option.id}
-                    />
-                    {option.label}
-                  </span>
-                  <span className={option.id === zoneId ? 'text-ink' : 'text-faint'}>
-                    {formatBDT(option.rate)}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
-
+          {/* Subtotal only. Delivery is chosen at checkout now, so quoting a
+              total here would either guess at a zone or show a figure that
+              changes on the next page. */}
           <div className="flex items-center justify-between py-4">
             <span className="text-base font-semibold">Total</span>
-            <span className="text-xl font-semibold">{formatBDT(subtotal + zone.rate)}</span>
+            <span className="text-xl font-semibold">{formatBDT(subtotal)}</span>
           </div>
 
           {savings > 0 && (
@@ -280,7 +244,7 @@ export function CartView() {
           )}
 
           <p className="mt-3 text-center text-xs text-muted">
-            Delivery charge is confirmed at checkout.
+            Delivery charge is added at checkout.
           </p>
         </aside>
       </div>
