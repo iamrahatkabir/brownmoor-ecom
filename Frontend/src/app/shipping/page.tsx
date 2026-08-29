@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 
+import { PolicySection, Strong } from '@/components/PolicyPage'
 import { CONTACT } from '@/lib/contact'
 
 export const metadata: Metadata = {
@@ -20,20 +21,6 @@ export const metadata: Metadata = {
  * little looser: Bengali sits taller than Latin and its conjuncts need the
  * vertical room to stay legible on a phone.
  */
-
-/** Section heading plus body, so the rhythm cannot drift between sections. */
-function Section({ children, title }: { children: React.ReactNode; title: string }) {
-  return (
-    <section className="border-t border-line pt-8 md:pt-10">
-      <h2 className="text-lg font-semibold leading-snug tracking-tight text-ink md:text-xl">
-        {title}
-      </h2>
-      <div className="mt-4 space-y-4 text-[15px] leading-[1.9] text-muted md:text-base md:leading-[2]">
-        {children}
-      </div>
-    </section>
-  )
-}
 
 /** One delivery zone and its rate. */
 function RateCard({ note, rate, zone }: { note: string; rate: string; zone: string }) {
@@ -66,29 +53,29 @@ export default function ShippingPage() {
             অংশ।
           </p>
           <p>
-            বর্তমানে আমরা <strong className="font-semibold text-ink">বাংলাদেশের সকল প্রান্তে</strong>{' '}
+            বর্তমানে আমরা <Strong>বাংলাদেশের সকল প্রান্তে</Strong>{' '}
             আমাদের পণ্য ডেলিভারি করে থাকি।
           </p>
         </div>
       </header>
 
       <div className="mt-10 space-y-8 md:mt-12 md:space-y-10">
-        <Section title="অর্ডার প্রসেসিং">
+        <PolicySection title="অর্ডার প্রসেসিং">
           <p>
             আপনার অর্ডার নিশ্চিত হওয়ার পর আমাদের টিম সাধারণত{' '}
-            <strong className="font-semibold text-ink">১–২ কর্মদিবসের মধ্যে</strong> অর্ডারটি প্রসেস
+            <Strong>১–২ কর্মদিবসের মধ্যে</Strong> অর্ডারটি প্রসেস
             করে ডেলিভারির জন্য প্রস্তুত করে।
           </p>
           <p>
             কোনো পণ্য সাময়িকভাবে স্টকে না থাকা বা অপ্রত্যাশিত কোনো কারণে অর্ডার প্রসেস করতে অতিরিক্ত
             সময় লাগলে আমরা আপনাকে যথাসম্ভব দ্রুত জানিয়ে দেব।
           </p>
-        </Section>
+        </PolicySection>
 
-        <Section title="ডেলিভারি সময়">
+        <PolicySection title="ডেলিভারি সময়">
           <p>
             অর্ডার প্রসেস হওয়ার পর সাধারণত{' '}
-            <strong className="font-semibold text-ink">৩–৫ কর্মদিবসের মধ্যে</strong> আপনার পণ্য
+            <Strong>৩–৫ কর্মদিবসের মধ্যে</Strong> আপনার পণ্য
             পৌঁছে যাবে।
           </p>
           <p>
@@ -97,14 +84,14 @@ export default function ShippingPage() {
             সামান্য বেশি সময় লাগতে পারে।
           </p>
           <p>আমরা প্রতিটি অর্ডার যত দ্রুত সম্ভব আপনার কাছে পৌঁছে দেওয়ার চেষ্টা করি।</p>
-        </Section>
+        </PolicySection>
 
-        <Section title="ডেলিভারি চার্জ">
+        <PolicySection title="ডেলিভারি চার্জ">
           <p>
             আপনার ডেলিভারি চার্জ নির্ধারিত হবে{' '}
-            <strong className="font-semibold text-ink">
+            <Strong>
               ডেলিভারি লোকেশন এবং অর্ডারের মোট ওজনের
-            </strong>{' '}
+            </Strong>{' '}
             ভিত্তিতে।
           </p>
 
@@ -116,15 +103,15 @@ export default function ShippingPage() {
 
           <p className="rounded-lg bg-wash px-4 py-3 text-[15px] md:text-base">
             ২ কেজির বেশি ওজনের অর্ডারের ক্ষেত্রে{' '}
-            <strong className="font-semibold text-ink">প্রতি অতিরিক্ত কেজির জন্য ৳২০</strong> যোগ
+            <Strong>প্রতি অতিরিক্ত কেজির জন্য ৳২০</Strong> যোগ
             হবে।
           </p>
-        </Section>
+        </PolicySection>
 
-        <Section title="Cash on Delivery">
+        <PolicySection title="Cash on Delivery">
           <p>
             আপনার সুবিধার কথা মাথায় রেখে Brownmoor.com-এ{' '}
-            <strong className="font-semibold text-ink">সারা বাংলাদেশে Cash on Delivery</strong>{' '}
+            <Strong>সারা বাংলাদেশে Cash on Delivery</Strong>{' '}
             সুবিধা রয়েছে।
           </p>
           <p>
@@ -132,17 +119,17 @@ export default function ShippingPage() {
             সম্পন্ন করুন।
           </p>
           <p className="font-medium text-ink">সহজ, নিরাপদ এবং ঝামেলামুক্ত।</p>
-        </Section>
+        </PolicySection>
 
-        <Section title="ডেলিভারি ঠিকানা পরিবর্তন">
+        <PolicySection title="ডেলিভারি ঠিকানা পরিবর্তন">
           <p>
             অর্ডার দেওয়ার পর আপনার ডেলিভারি ঠিকানা পরিবর্তনের প্রয়োজন হলে আমাদের Customer Support
-            টিমের সঙ্গে <strong className="font-semibold text-ink">ফোনে যোগাযোগ করতে হবে</strong>।
+            টিমের সঙ্গে <Strong>ফোনে যোগাযোগ করতে হবে</Strong>।
           </p>
           <p>বর্তমানে ওয়েবসাইট থেকে সরাসরি ডেলিভারি ঠিকানা পরিবর্তনের সুবিধা নেই।</p>
           <p>
             ঠিকানা পরিবর্তনের অনুরোধ করার সময় আপনার{' '}
-            <strong className="font-semibold text-ink">অর্ডার নম্বর এবং নতুন ঠিকানা</strong> প্রস্তুত
+            <Strong>অর্ডার নম্বর এবং নতুন ঠিকানা</Strong> প্রস্তুত
             রাখুন।
           </p>
 
@@ -155,12 +142,12 @@ export default function ShippingPage() {
             </p>
             <p className="mt-1 text-[15px]">সকাল ৯টা – রাত ১১টা</p>
           </div>
-        </Section>
+        </PolicySection>
 
-        <Section title="অর্ডারে বিলম্ব হলে">
+        <PolicySection title="অর্ডারে বিলম্ব হলে">
           <p>আমরা প্রতিটি অর্ডার নির্ধারিত সময়ের মধ্যে পৌঁছে দেওয়ার জন্য সর্বোচ্চ চেষ্টা করি।</p>
           <p>
-            তবে কোনো পণ্য <strong className="font-semibold text-ink">স্টকে না থাকা</strong>, অর্ডার
+            তবে কোনো পণ্য <Strong>স্টকে না থাকা</Strong>, অর্ডার
             প্রসেসিংয়ে বিলম্ব বা অন্য কোনো অনাকাঙ্ক্ষিত কারণে আপনার অর্ডার বিলম্বিত হলে আমরা আপনাকে
             বিষয়টি জানিয়ে দেব।
           </p>
@@ -168,19 +155,19 @@ export default function ShippingPage() {
             আপনার অর্ডারের বর্তমান অবস্থা সম্পর্কে জানতে আমাদের Customer Support টিমের সঙ্গে যোগাযোগ
             করতে পারেন।
           </p>
-        </Section>
+        </PolicySection>
 
-        <Section title="পণ্য ক্ষতিগ্রস্ত অবস্থায় পৌঁছালে">
+        <PolicySection title="পণ্য ক্ষতিগ্রস্ত অবস্থায় পৌঁছালে">
           <p>
             আপনার অর্ডার করা পণ্য যদি ডেলিভারির সময়{' '}
-            <strong className="font-semibold text-ink">ক্ষতিগ্রস্ত অবস্থায়</strong> পৌঁছায়, তাহলে
-            আমরা <strong className="font-semibold text-ink">Happy Return</strong> গ্রহণ করি।
+            <Strong>ক্ষতিগ্রস্ত অবস্থায়</Strong> পৌঁছায়, তাহলে
+            আমরা <Strong>Happy Return</Strong> গ্রহণ করি।
           </p>
           <p>
             এক্ষেত্রে পণ্যটি আমাদের কাছে ফেরত পাঠানোর{' '}
-            <strong className="font-semibold text-ink">
+            <Strong>
               ডেলিভারি চার্জ কাস্টমারকে বহন করতে হবে
-            </strong>
+            </Strong>
             ।
           </p>
           <p>
@@ -201,9 +188,9 @@ export default function ShippingPage() {
               </a>
             </p>
           </div>
-        </Section>
+        </PolicySection>
 
-        <Section title="আমাদের সঙ্গে যোগাযোগ করুন">
+        <PolicySection title="আমাদের সঙ্গে যোগাযোগ করুন">
           <p>আপনার অর্ডার, ডেলিভারি বা শিপিং সম্পর্কিত কোনো প্রশ্ন থাকলে আমরা সাহায্য করতে প্রস্তুত।</p>
 
           <div className="rounded-lg bg-wash p-5 md:p-6">
@@ -232,7 +219,7 @@ export default function ShippingPage() {
             <p className="mt-4 text-sm font-medium text-ink">Customer Support Hours</p>
             <p className="mt-1 text-[15px]">সকাল ৯টা – রাত ১১টা</p>
           </div>
-        </Section>
+        </PolicySection>
       </div>
 
       <p className="mt-10 border-t border-line pt-8 text-center text-[15px] leading-[1.9] text-muted md:mt-12 md:text-base">
