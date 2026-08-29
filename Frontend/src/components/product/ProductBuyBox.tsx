@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Spinner } from '@/components/Spinner'
+import { useStickyActionHeight } from '@/components/useStickyActionHeight'
 import { QuantityStepper } from '@/components/cart/QuantityStepper'
 import { useCartLine } from '@/components/cart/useCartLine'
 import { formatBDT, variantLabel } from '@/lib/price'
@@ -17,6 +18,8 @@ const resolveVariants = (product: Product): Variant[] =>
     .sort((a, b) => (a.priceInBDT ?? 0) - (b.priceInBDT ?? 0))
 
 export function ProductBuyBox({ product }: { product: Product }) {
+  const stickyRef = useRef<HTMLDivElement>(null)
+
   const variants = useMemo(() => resolveVariants(product), [product])
   const hasVariants = Boolean(product.enableVariants && variants.length > 0)
 
@@ -59,6 +62,10 @@ export function ProductBuyBox({ product }: { product: Product }) {
   // the two are never on screen competing with each other.
   const anchorRef = useRef<HTMLDivElement>(null)
   const [showSticky, setShowSticky] = useState(false)
+
+  // Publishes this bar's height so the floating WhatsApp button lifts clear
+  // instead of covering Add to cart. Declared after showSticky, which it needs.
+  useStickyActionHeight(stickyRef, showSticky)
 
   useEffect(() => {
     const node = anchorRef.current
@@ -209,7 +216,12 @@ export function ProductBuyBox({ product }: { product: Product }) {
 
       {/* Sticky mobile CTA. Mirrors whichever control is live above. */}
       {showSticky && (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper p-3 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] md:hidden">
+        <div
+          className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-paper p-3 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] md:hidden"
+          ref={stickyRef}
+          // Clears the home indicator on newer iPhones.
+          style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+        >
           <div className="flex items-center gap-3">
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs text-muted">{product.title}</p>
