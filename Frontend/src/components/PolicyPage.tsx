@@ -90,3 +90,19 @@ export function PolicyCard({ children, title }: { children: ReactNode; title?: s
     </div>
   )
 }
+
+/**
+ * A condition the customer has to act on, not just read.
+ *
+ * Uses the brand's sale red, which globals.css reserves for genuinely urgent
+ * signals — appropriate here, because missing an unboxing video is what turns a
+ * valid return into a refused one.
+ */
+export function PolicyNotice({ children, title }: { children: ReactNode; title?: string }) {
+  return (
+    <div className="rounded-lg border border-sale/30 bg-sale/5 p-4 md:p-5">
+      {title && <p className="text-sm font-semibold text-sale">{title}</p>}
+      <div className={title ? 'mt-2 space-y-3' : 'space-y-3'}>{children}</div>
+    </div>
+  )
+}

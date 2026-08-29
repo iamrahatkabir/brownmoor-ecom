@@ -56,7 +56,7 @@ export function Footer({ categories }: { categories: CategoryTree[] }) {
             <ul className="mt-4 space-y-2.5">
               {[
                 { href: '/shipping', label: 'Shipping & delivery' },
-                { href: '/returns', label: 'Returns' },
+                { href: '/returns', label: 'Returns & Warranty' },
                 { href: '/contact', label: 'Contact us' },
                 { href: '/privacy', label: 'Privacy policy' },
               ].map((link) => (
