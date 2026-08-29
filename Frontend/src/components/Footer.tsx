@@ -23,7 +23,7 @@ export function Footer({ categories }: { categories: CategoryTree[] }) {
                 `unoptimized` because Next's image optimiser refuses SVG by
                 default, and vector art gains nothing from rasterising anyway. */}
             <Image
-              alt="Brownmoor"
+              alt="Brownmoor.com"
               className="h-7 w-auto"
               height={72}
               src="/logo-light.svg"
@@ -122,7 +122,7 @@ export function Footer({ categories }: { categories: CategoryTree[] }) {
         </div>
 
         <div className="mt-12 flex flex-col gap-3 border-t border-paper/15 pt-6 text-xs text-paper/50 md:flex-row md:items-center md:justify-between">
-          <p>© {year} Brownmoor. All rights reserved.</p>
+          <p>© {year} Brownmoor.com. All rights reserved.</p>
           <p>Cash on delivery available across Bangladesh.</p>
         </div>
       </div>

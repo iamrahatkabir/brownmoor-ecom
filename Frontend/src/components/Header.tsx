@@ -70,7 +70,7 @@ export function Header({ categories }: { categories: CategoryTree[] }) {
             {/* Intrinsic 395×72, rendered at 20–24px tall — roughly 3× the
                 display size, so it stays sharp on high-density screens. */}
             <Image
-              alt="Brownmoor"
+              alt="Brownmoor.com"
               className="h-5 w-auto md:h-6"
               height={72}
               priority

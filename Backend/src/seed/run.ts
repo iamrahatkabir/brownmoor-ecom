@@ -228,7 +228,7 @@ const seed = async (payload: Payload): Promise<void> => {
       const banner = await uploadImage(
         payload,
         'hero-banner',
-        'Brownmoor',
+        'Brownmoor.com',
         HOME_PAGE.heroColour,
         2400,
         1000,

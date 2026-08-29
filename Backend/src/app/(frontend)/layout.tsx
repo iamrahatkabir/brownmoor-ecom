@@ -1,8 +1,8 @@
 import React from 'react'
 
 export const metadata = {
-  description: 'Brownmoor commerce backend',
-  title: 'Brownmoor Admin',
+  description: 'Brownmoor.com commerce backend',
+  title: 'Brownmoor.com Admin',
 }
 
 export default async function RootLayout(props: { children: React.ReactNode }) {

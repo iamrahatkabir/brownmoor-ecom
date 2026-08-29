@@ -24,7 +24,7 @@ export function Hero({ content }: { content: HomePageGlobal | null }) {
       <div className="relative aspect-[4/3] w-full sm:aspect-[16/9] lg:aspect-[21/9]">
         {src && (
           <Image
-            alt={heading || 'Brownmoor'}
+            alt={heading || 'Brownmoor.com'}
             className="object-cover"
             fill
             // Above the fold, so it should not wait for lazy loading.

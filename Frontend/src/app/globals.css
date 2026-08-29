@@ -25,7 +25,10 @@
      against the monochrome header. */
   --color-notify: #fa3e3f;
 
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Geist first for Latin; Bengali glyphs fall through to Noto, which is the
+     only face here that has them. */
+  --font-sans: var(--font-geist-sans), var(--font-noto-bengali), ui-sans-serif, system-ui,
+    sans-serif;
 }
 
 html {

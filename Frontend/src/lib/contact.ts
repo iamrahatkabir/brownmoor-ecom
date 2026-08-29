@@ -22,6 +22,10 @@ export const CONTACT = {
     label: 'Brownmoor.com',
     url: 'https://www.facebook.com/brownmoorbangladesh/',
   },
+  email: {
+    address: 'hellobrownmoor@gmail.com',
+    url: 'mailto:hellobrownmoor@gmail.com',
+  },
   hotline: {
     display: PHONE.display,
     /** Opens the dialer on a phone. */
