@@ -76,6 +76,7 @@ export interface Config {
     users: User;
     media: Media;
     categories: Category;
+    coupons: Coupon;
     addresses: Address;
     variants: Variant;
     variantTypes: VariantType;
@@ -101,6 +102,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    coupons: CouponsSelect<false> | CouponsSelect<true>;
     addresses: AddressesSelect<false> | AddressesSelect<true>;
     variants: VariantsSelect<false> | VariantsSelect<true>;
     variantTypes: VariantTypesSelect<false> | VariantTypesSelect<true>;
@@ -262,6 +264,61 @@ export interface Category {
    * Leave empty for a top-level category.
    */
   parent?: (number | null) | Category;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Discount codes customers enter at checkout. The discount is always recalculated on the server when the order is placed, so a code cannot be edited into a bigger saving from the browser.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "coupons".
+ */
+export interface Coupon {
+  id: number;
+  /**
+   * What the customer types. Case does not matter — it is stored uppercase.
+   */
+  code: string;
+  /**
+   * Untick to switch the code off immediately, without deleting its history.
+   */
+  active?: boolean | null;
+  /**
+   * How the saving is worked out.
+   */
+  discountType: 'percentage' | 'fixed';
+  /**
+   * Whole number — 20 means 20% off the subtotal.
+   */
+  percentage?: number | null;
+  /**
+   * Optional ceiling on a percentage discount, so "20% off" cannot become a large saving on a large order. Leave empty for no cap.
+   */
+  maxDiscount?: number | null;
+  /**
+   * Taken straight off the subtotal.
+   */
+  fixedAmount?: number | null;
+  /**
+   * Smallest subtotal the code works on, before delivery. Leave empty to allow any order.
+   */
+  minOrderAmount?: number | null;
+  /**
+   * Leave empty to start immediately.
+   */
+  startsAt?: string | null;
+  /**
+   * Leave empty for no expiry.
+   */
+  expiresAt?: string | null;
+  /**
+   * Total times the code may be used. Leave empty for unlimited.
+   */
+  usageLimit?: number | null;
+  /**
+   * Counted up when an order is placed.
+   */
+  usageCount?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -509,6 +566,14 @@ export interface Order {
     phone: string;
   };
   /**
+   * Discount code used on this order, if any.
+   */
+  couponCode?: string | null;
+  /**
+   * Saving applied by the coupon. Already deducted from the order total.
+   */
+  discountAmount?: number | null;
+  /**
    * Delivery charge at the time of ordering. Included in the order total.
    */
   shippingAmount?: number | null;
@@ -555,6 +620,10 @@ export interface Transaction {
      * Internal handle linking this transaction to its checkout attempt.
      */
     reference?: string | null;
+    /**
+     * Discount code entered at checkout, if any. The saving is recalculated from it when the order is confirmed.
+     */
+    couponCode?: string | null;
     /**
      * Where the courier should deliver, captured at checkout. Copied onto the order on confirmation.
      */
@@ -629,6 +698,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'categories';
         value: number | Category;
+      } | null)
+    | ({
+        relationTo: 'coupons';
+        value: number | Coupon;
       } | null)
     | ({
         relationTo: 'addresses';
@@ -795,6 +868,25 @@ export interface CategoriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "coupons_select".
+ */
+export interface CouponsSelect<T extends boolean = true> {
+  code?: T;
+  active?: T;
+  discountType?: T;
+  percentage?: T;
+  maxDiscount?: T;
+  fixedAmount?: T;
+  minOrderAmount?: T;
+  startsAt?: T;
+  expiresAt?: T;
+  usageLimit?: T;
+  usageCount?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "addresses_select".
  */
 export interface AddressesSelect<T extends boolean = true> {
@@ -952,6 +1044,8 @@ export interface OrdersSelect<T extends boolean = true> {
         country?: T;
         phone?: T;
       };
+  couponCode?: T;
+  discountAmount?: T;
   shippingAmount?: T;
   shippingZone?: T;
   totalWeightGrams?: T;
@@ -979,6 +1073,7 @@ export interface TransactionsSelect<T extends boolean = true> {
     | T
     | {
         reference?: T;
+        couponCode?: T;
         shippingAddressSnapshot?: T;
       };
   billingAddress?:

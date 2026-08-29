@@ -12,6 +12,7 @@ import { randomBytes } from 'crypto'
 import type { Order, Transaction } from '../payload-types'
 import type { ShippingLine } from '../shipping/calculate'
 
+import { resolveCoupon } from '../coupons/calculate'
 import { quoteShipping } from '../shipping/calculate'
 
 /**
@@ -83,6 +84,15 @@ export const cashOnDeliveryAdapter = (props?: PaymentAdapterArgs): PaymentAdapte
       },
       index: true,
       label: 'COD Reference',
+    },
+    {
+      name: 'couponCode',
+      type: 'text',
+      admin: {
+        description: 'Discount code entered at checkout, if any. The saving is recalculated from it when the order is confirmed.',
+        readOnly: true,
+      },
+      label: 'Coupon code',
     },
     {
       name: 'shippingAddressSnapshot',
@@ -189,12 +199,32 @@ export const cashOnDeliveryAdapter = (props?: PaymentAdapterArgs): PaymentAdapte
           subtotal: transaction.amount ?? 0,
         })
 
+        /*
+         * Priced from the stored code, never from a figure sent by the browser
+         * — the same reasoning as the delivery charge above. A coupon that has
+         * since expired, been switched off or hit its usage limit simply stops
+         * applying, and the order goes through at full price rather than
+         * failing at the last step.
+         */
+        const subtotal = transaction.amount ?? 0
+        const storedCode = (transaction.cod as undefined | { couponCode?: unknown })?.couponCode
+
+        const couponResult =
+          typeof storedCode === 'string' && storedCode
+            ? await resolveCoupon({ code: storedCode, payload, subtotal })
+            : null
+
+        const discount = couponResult?.valid ? couponResult.discount : 0
+
         const order = await payload.create({
           collection: ordersSlug as CollectionSlug,
           data: {
-            // Grand total: goods plus delivery. The customer hands the courier
-            // exactly this amount.
-            amount: (transaction.amount ?? 0) + shipping.amount,
+            // Grand total: goods, less any discount, plus delivery. The customer
+            // hands the courier exactly this amount.
+            amount: subtotal - discount + shipping.amount,
+            ...(couponResult?.valid
+              ? { couponCode: couponResult.coupon.code, discountAmount: discount }
+              : {}),
             currency: transaction.currency,
             shippingAmount: shipping.amount,
             shippingZone: shipping.zoneLabel,
@@ -215,6 +245,19 @@ export const cashOnDeliveryAdapter = (props?: PaymentAdapterArgs): PaymentAdapte
         // the other. Two sequential writes to a database in another region is a
         // round trip the shopper spends staring at a spinner.
         await Promise.all([
+          // Counted only now, after the order exists — an abandoned checkout
+          // must not use up a limited code.
+          ...(couponResult?.valid
+            ? [
+                payload.update({
+                  id: couponResult.coupon.id,
+                  collection: 'coupons',
+                  data: { usageCount: (couponResult.coupon.usageCount ?? 0) + 1 },
+                  overrideAccess: true,
+                  req,
+                }),
+              ]
+            : []),
           payload.update({
             id: cartID,
             collection: cartsSlug as CollectionSlug,
@@ -250,6 +293,16 @@ export const cashOnDeliveryAdapter = (props?: PaymentAdapterArgs): PaymentAdapte
     initiatePayment: async ({ data, req, transactionsSlug }) => {
       const payload = req.payload
       const { billingAddress, cart, currency, customerEmail, shippingAddress } = data
+
+      /*
+       * Read off the raw request, not the adapter's `data`.
+       *
+       * The plugin builds that argument itself from a fixed list — billing
+       * address, cart, currency, email, shipping address — so anything else in
+       * the checkout body is dropped before it arrives. `req.data` still holds
+       * the whole body, which is where the coupon actually is.
+       */
+      const couponCode = (req.data as undefined | { couponCode?: unknown })?.couponCode
       const amount = cart?.subtotal
 
       if (!currency) {
@@ -284,6 +337,11 @@ export const cashOnDeliveryAdapter = (props?: PaymentAdapterArgs): PaymentAdapte
             billingAddress: billingAddress ?? shippingAddress,
             cart: cart.id,
             cod: {
+              // Stored here rather than trusted from the confirm request, so the
+              // code cannot be swapped between starting and finishing checkout.
+              ...(typeof couponCode === 'string' && couponCode.trim()
+                ? { couponCode: couponCode.trim().toUpperCase() }
+                : {}),
               reference,
               // Stored as JSON, so the address is frozen as it was at checkout
               // even if the customer later edits their saved address.

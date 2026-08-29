@@ -17,6 +17,7 @@ import {
   publicAccess,
 } from './access'
 import { Categories } from './collections/Categories'
+import { Coupons } from './collections/Coupons'
 import { Media } from './collections/Media'
 import { ordersCollectionOverride } from './collections/Orders'
 import { productsCollectionOverride } from './collections/Products'
@@ -59,7 +60,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Categories],
+  collections: [Users, Media, Categories, Coupons],
   globals: [HomePage, ShippingSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

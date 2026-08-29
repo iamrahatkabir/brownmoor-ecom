@@ -6,6 +6,7 @@ import { useCallback, useState, useSyncExternalStore } from 'react'
 
 import { Link } from '@/components/Link'
 import { Spinner } from '@/components/Spinner'
+import { CouponField, formatDiscount } from '@/components/checkout/CouponField'
 import { StickyAction } from '@/components/StickyAction'
 import { QuantityStepper } from '@/components/cart/QuantityStepper'
 import { useCartHydrated } from '@/components/cart/useCartHydrated'
@@ -97,6 +98,13 @@ export function CheckoutView() {
     note: '',
     phone: '',
   })
+  /**
+   * What the server said this code is worth. Held only to show the shopper a
+   * figure — the order is priced again from the code when it is confirmed, so
+   * this number never reaches the total that is charged.
+   */
+  const [coupon, setCoupon] = useState<null | { code: string; discount: number }>(null)
+
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
   const [failure, setFailure] = useState<null | string>(null)
@@ -136,7 +144,9 @@ export function CheckoutView() {
 
   const zone = zoneById(chosenZoneId ?? storedZoneId)
 
-  const total = subtotal + zone.rate
+  // Capped at the subtotal, so a large code can never eat into delivery.
+  const discount = Math.min(coupon?.discount ?? 0, subtotal)
+  const total = subtotal - discount + zone.rate
 
   const selectZone = (id: string) => {
     setChosenZoneId(id)
@@ -212,6 +222,9 @@ export function CheckoutView() {
         billingAddress: address,
         // The endpoint resolves the cart from this, not from a cookie.
         cartID,
+        // The code travels, never the saving: the server works the amount out
+        // again, so a tampered figure would simply be ignored.
+        ...(coupon ? { couponCode: coupon.code } : {}),
         // The plugin rejects a purchase with no customer email, but the design
         // makes it optional — cash on delivery is arranged by phone. Fall back
         // to a placeholder derived from the number so the order still carries a
@@ -433,6 +446,25 @@ export function CheckoutView() {
                 <dt className="font-medium">Subtotal</dt>
                 <dd>{formatBDT(subtotal)}</dd>
               </div>
+
+              <div className="border-b border-line py-3">
+                <dt className="font-medium">Coupon code</dt>
+                <dd className="mt-2.5">
+                  <CouponField
+                    applied={coupon}
+                    onApply={setCoupon}
+                    onRemove={() => setCoupon(null)}
+                    subtotal={subtotal}
+                  />
+                </dd>
+              </div>
+
+              {discount > 0 && (
+                <div className="flex items-center justify-between border-b border-line py-3">
+                  <dt className="font-medium">Discount</dt>
+                  <dd className="font-medium text-sale">{formatDiscount(discount)}</dd>
+                </div>
+              )}
 
               <div className="border-b border-line py-3">
                 <dt className="font-medium">Shipment</dt>

@@ -143,6 +143,27 @@ export const ordersCollectionOverride: CollectionOverride = ({ defaultCollection
         ? [{ ...shippingAddress, admin: { ...shippingAddress.admin, hidden: true } } as Field]
         : []
     })(),
+    {
+      name: 'couponCode',
+      type: 'text',
+      admin: {
+        description: 'Discount code used on this order, if any.',
+        readOnly: true,
+      },
+      label: 'Coupon code',
+    },
+    amountField({
+      currenciesConfig,
+      currency: BDT,
+      overrides: {
+        name: 'discountAmount',
+        admin: {
+          description: 'Saving applied by the coupon. Already deducted from the order total.',
+          readOnly: true,
+        },
+        label: 'Discount (BDT)',
+      },
+    }),
     amountField({
       currenciesConfig,
       currency: BDT,
