@@ -72,7 +72,18 @@ export type HomeSection = {
   viewAllUrl?: string | null
 }
 
+/** One banner in the homepage slider. */
+export type HeroSlide = {
+  id?: string
+  image?: Media | number | null
+  link?: string | null
+  alt?: string | null
+}
+
 export type HomePageGlobal = {
+  heroSlides?: HeroSlide[] | null
+  /** Seconds per slide. 0 or absent leaves the banner still. */
+  heroAutoplaySeconds?: number | null
   image?: Media | number | null
   heading?: string | null
   subheading?: string | null

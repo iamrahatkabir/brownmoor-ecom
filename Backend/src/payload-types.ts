@@ -1148,6 +1148,30 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 export interface HomePage {
   id: number;
   /**
+   * Banners at the top of the homepage, shown in this order with arrows to move between them. Drag to rearrange. Each slide is a finished design, so any wording belongs in the artwork itself. Leave empty to fall back to the single banner below.
+   */
+  heroSlides?:
+    | {
+        /**
+         * Landscape, around 2400×1000. Every slide should be the same shape — the frame does not resize between them, so a taller image would be cropped.
+         */
+        image: number | Media;
+        /**
+         * Where the banner takes a shopper who taps it, e.g. /category/cookware or /product/glass-bottle. Leave empty to make the slide unclickable.
+         */
+        link?: string | null;
+        /**
+         * Describes the banner for screen readers and for when the image fails to load. Say what is being promoted, not "banner".
+         */
+        alt?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * How long each slide is shown before the next one. Set to 0 to stop the banner moving on its own — shoppers can still swipe or use the dots.
+   */
+  heroAutoplaySeconds?: number | null;
+  /**
    * Full-width banner. Landscape works best — around 2400×1000 for a crisp result on large screens.
    */
   image?: (number | null) | Media;
@@ -1256,6 +1280,15 @@ export interface ShippingSetting {
  * via the `definition` "home-page_select".
  */
 export interface HomePageSelect<T extends boolean = true> {
+  heroSlides?:
+    | T
+    | {
+        image?: T;
+        link?: T;
+        alt?: T;
+        id?: T;
+      };
+  heroAutoplaySeconds?: T;
   image?: T;
   heading?: T;
   subheading?: T;

@@ -1,18 +1,44 @@
 import Image from 'next/image'
 
+import { HeroSlider, type Slide } from '@/components/HeroSlider'
 import { Link } from '@/components/Link'
 import { mediaURL } from '@/lib/payload'
 import type { HomePageGlobal } from '@/lib/types'
 
 /**
- * Single full-width banner, editable from the admin panel via the `home-page`
- * global — image, heading, subheading and CTA all come from there.
+ * The top of the homepage.
  *
- * Every part is optional. With no image it falls back to a flat ink panel
- * rather than a broken frame, so the page still looks deliberate before anyone
- * has uploaded artwork.
+ * Slides win when any are set: those are finished artwork, each with its own
+ * destination, and the wording lives in the image. The older single banner —
+ * one image with a heading, subheading and button laid over it — stays as the
+ * fallback, so the page still has something above the fold while the slider is
+ * being filled in.
+ *
+ * Every part of the fallback is optional. With no image at all it becomes a
+ * flat ink panel rather than a broken frame, so the page still looks
+ * deliberate before anyone has uploaded artwork.
  */
 export function Hero({ content }: { content: HomePageGlobal | null }) {
+  const slides: Slide[] = (content?.heroSlides ?? []).flatMap((slide) => {
+    const src = mediaURL(slide.image, 'feature')
+
+    // A slide with no resolvable image would be a blank frame the shopper can
+    // still page onto, so it is dropped rather than rendered empty.
+    return src
+      ? [
+          {
+            alt: slide.alt || content?.heading || 'Brownmoor.com',
+            href: slide.link?.trim() || null,
+            src,
+          },
+        ]
+      : []
+  })
+
+  if (slides.length > 0) {
+    return <HeroSlider autoplaySeconds={content?.heroAutoplaySeconds} slides={slides} />
+  }
+
   const src = mediaURL(content?.image, 'feature')
   const heading = content?.heading
   const subheading = content?.subheading

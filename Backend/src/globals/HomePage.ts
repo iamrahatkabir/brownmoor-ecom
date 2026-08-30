@@ -25,7 +25,65 @@ export const HomePage: GlobalConfig = {
   },
   fields: [
     {
+      name: 'heroSlides',
+      type: 'array',
+      admin: {
+        description:
+          'Banners at the top of the homepage, shown in this order with arrows to move between them. Drag to rearrange. Each slide is a finished design, so any wording belongs in the artwork itself. Leave empty to fall back to the single banner below.',
+        initCollapsed: true,
+      },
+      fields: [
+        {
+          name: 'image',
+          type: 'upload',
+          admin: {
+            description:
+              'Landscape, around 2400×1000. Every slide should be the same shape — the frame does not resize between them, so a taller image would be cropped.',
+          },
+          relationTo: 'media',
+          required: true,
+        },
+        {
+          name: 'link',
+          type: 'text',
+          admin: {
+            description:
+              'Where the banner takes a shopper who taps it, e.g. /category/cookware or /product/glass-bottle. Leave empty to make the slide unclickable.',
+          },
+        },
+        {
+          name: 'alt',
+          type: 'text',
+          admin: {
+            description:
+              'Describes the banner for screen readers and for when the image fails to load. Say what is being promoted, not "banner".',
+          },
+        },
+      ],
+      labels: {
+        plural: 'Slides',
+        singular: 'Slide',
+      },
+    },
+    {
+      name: 'heroAutoplaySeconds',
+      type: 'number',
+      admin: {
+        condition: (data) => (data?.heroSlides ?? []).length > 1,
+        description:
+          'How long each slide is shown before the next one. Set to 0 to stop the banner moving on its own — shoppers can still swipe or use the dots.',
+      },
+      defaultValue: 5,
+      label: 'Seconds per slide',
+      min: 0,
+    },
+    {
       type: 'collapsible',
+      admin: {
+        description:
+          'Used only when no slides are set above. Kept so the homepage still has a banner while the slider is being filled in.',
+        initCollapsed: true,
+      },
       fields: [
         {
           name: 'image',
@@ -70,7 +128,7 @@ export const HomePage: GlobalConfig = {
           ],
         },
       ],
-      label: 'Hero banner',
+      label: 'Hero banner (fallback)',
     },
     {
       type: 'collapsible',
