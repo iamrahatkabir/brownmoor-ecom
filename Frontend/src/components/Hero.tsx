@@ -46,8 +46,8 @@ export function Hero({ content }: { content: HomePageGlobal | null }) {
   const hasText = Boolean(heading || subheading || hasCTA)
 
   return (
-    <section className="relative isolate overflow-hidden bg-ink">
-      <div className="relative aspect-[4/3] w-full sm:aspect-[16/9] lg:aspect-[21/9]">
+    <section className="mx-auto w-full max-w-[1280px] px-4 pt-4 md:pt-6">
+      <div className="relative isolate aspect-[12/5] w-full overflow-hidden rounded-lg bg-ink">
         {src && (
           <Image
             alt={heading || 'Brownmoor.com'}

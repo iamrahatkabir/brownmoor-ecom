@@ -38,7 +38,7 @@ export const HomePage: GlobalConfig = {
           type: 'upload',
           admin: {
             description:
-              'Landscape, around 2400×1000. Every slide should be the same shape — the frame does not resize between them, so a taller image would be cropped.',
+              'Landscape at 2400×1000, or any 12:5 ratio. The frame is that shape at every screen size, so a design supplied at these proportions is never cropped. Every slide should match.',
           },
           relationTo: 'media',
           required: true,

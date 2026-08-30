@@ -1,6 +1,8 @@
 'use client'
 
 import Image from 'next/image'
+
+import { ChevronDownIcon } from '@/components/icons'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 export type Slide = { alt: string; href: null | string; src: string }
@@ -80,6 +82,11 @@ export function HeroSlider({
   const [dragging, setDragging] = useState(false)
 
   const onPointerDown = (event: React.PointerEvent) => {
+    // A press on a chevron or a dot is a click, not the beginning of a drag.
+    if ((event.target as HTMLElement).closest('button')) {
+      return
+    }
+
     dragStartX.current = event.clientX
     dragged.current = false
     setDragging(true)
@@ -164,9 +171,9 @@ export function HeroSlider({
     <section
       aria-label="Featured banners"
       aria-roledescription="carousel"
-      className={`relative isolate touch-pan-y select-none overflow-hidden bg-ink ${
-        count > 1 ? (dragging ? 'cursor-grabbing' : 'cursor-grab') : ''
-      }`}
+      // Sits inside the content column rather than running edge to edge, so
+      // the banner reads as a card on the page instead of a full-bleed header.
+      className="mx-auto w-full max-w-[1280px] px-4 pt-4 md:pt-6"
       onBlur={() => setPaused(false)}
       onClickCapture={onClickCapture}
       // Stops the banner changing under a cursor that is about to click it.
@@ -180,7 +187,17 @@ export function HeroSlider({
       ref={regionRef}
       tabIndex={-1}
     >
-      <div className="relative aspect-[4/3] w-full sm:aspect-[16/9] lg:aspect-[21/9]">
+      {/*
+       * One aspect ratio at every width, matching the 2400×1000 artwork the
+       * admin asks for. Changing shape between breakpoints would crop a
+       * finished design differently on each device, which is the last thing you
+       * want when the wording is part of the image.
+       */}
+      <div
+        className={`relative aspect-[12/5] w-full touch-pan-y select-none overflow-hidden rounded-lg bg-ink ${
+          count > 1 ? (dragging ? 'cursor-grabbing' : 'cursor-grab') : ''
+        }`}
+      >
         {slides.map((slide, position) => {
           const isActive = position === index
 
@@ -226,8 +243,35 @@ export function HeroSlider({
           )
         })}
 
+        {/*
+         * Desktop only. A phone has swiping, and buttons there would sit over
+         * the artwork on the smallest screen — where the design has least room
+         * to spare.
+         */}
         {count > 1 && (
-          <div className="absolute inset-x-0 bottom-3 flex justify-center gap-2 md:bottom-5">
+          <>
+            <button
+              aria-label="Previous banner"
+              className="absolute left-3 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-paper/85 text-ink shadow-sm backdrop-blur transition-colors hover:bg-paper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper md:flex"
+              onClick={() => go(index - 1)}
+              type="button"
+            >
+              <ChevronDownIcon className="h-4 w-4 rotate-90" />
+            </button>
+
+            <button
+              aria-label="Next banner"
+              className="absolute right-3 top-1/2 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-paper/85 text-ink shadow-sm backdrop-blur transition-colors hover:bg-paper focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper md:flex"
+              onClick={() => go(index + 1)}
+              type="button"
+            >
+              <ChevronDownIcon className="h-4 w-4 -rotate-90" />
+            </button>
+          </>
+        )}
+
+        {count > 1 && (
+          <div className="absolute inset-x-0 bottom-2.5 flex justify-center gap-2 md:bottom-4">
             {slides.map((slide, position) => (
               <button
                 aria-current={position === index}
