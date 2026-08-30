@@ -1,6 +1,8 @@
 import { Hero } from '@/components/Hero'
 import { ProductSection } from '@/components/ProductSection'
+import { TopCollections } from '@/components/TopCollections'
 import { getHomePage, getProducts, toIds } from '@/lib/payload'
+import type { Category } from '@/lib/types'
 
 /**
  * Home page.
@@ -12,6 +14,12 @@ import { getHomePage, getProducts, toIds } from '@/lib/payload'
 export default async function HomePage() {
   const content = await getHomePage()
   const sections = content?.sections ?? []
+
+  // Numbers survive here when a featured category has since been deleted; they
+  // are dropped rather than rendered as an empty tile.
+  const featured = (content?.topCollections ?? []).filter(
+    (entry): entry is Category => typeof entry === 'object' && entry !== null,
+  )
 
   // One request per band, issued together rather than in series — five
   // sequential fetches would stack their latency into the first paint.
@@ -29,6 +37,8 @@ export default async function HomePage() {
   return (
     <>
       <Hero content={content} />
+
+      <TopCollections categories={featured} heading={content?.topCollectionsHeading} />
 
       {resolved.map(({ section, products }, index) => (
         <ProductSection

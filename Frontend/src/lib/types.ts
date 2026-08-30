@@ -21,6 +21,8 @@ export type Category = {
   title: string
   slug: string
   description?: string | null
+  /** Used for the Top Collections tiles, and anywhere else a category is shown. */
+  image?: Media | number | null
   parent?: Category | number | null
 }
 
@@ -77,6 +79,9 @@ export type HomePageGlobal = {
   ctaLabel?: string | null
   ctaLink?: string | null
   sections?: HomeSection[] | null
+  /** Categories featured in the Top Collections grid, in the admin's order. */
+  topCollections?: Array<Category | number> | null
+  topCollectionsHeading?: string | null
 }
 
 export type Paginated<T> = {

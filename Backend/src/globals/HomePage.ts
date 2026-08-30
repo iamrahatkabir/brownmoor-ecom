@@ -73,6 +73,32 @@ export const HomePage: GlobalConfig = {
       label: 'Hero banner',
     },
     {
+      type: 'collapsible',
+      fields: [
+        {
+          name: 'topCollectionsHeading',
+          type: 'text',
+          admin: {
+            description: 'Shown above the grid. Leave empty to hide the heading.',
+          },
+          defaultValue: 'Top Collections',
+          label: 'Heading',
+        },
+        {
+          name: 'topCollections',
+          type: 'relationship',
+          admin: {
+            description:
+              'Pick the categories to feature and drag to reorder. Each tile uses that category\'s own image, set on the category itself — so a picture chosen here is the same one used everywhere else. Leave empty to hide the whole section.',
+          },
+          hasMany: true,
+          label: 'Categories',
+          relationTo: 'categories',
+        },
+      ],
+      label: 'Top collections',
+    },
+    {
       name: 'sections',
       type: 'array',
       admin: {

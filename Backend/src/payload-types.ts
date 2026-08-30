@@ -1165,6 +1165,14 @@ export interface HomePage {
    */
   ctaLink?: string | null;
   /**
+   * Shown above the grid. Leave empty to hide the heading.
+   */
+  topCollectionsHeading?: string | null;
+  /**
+   * Pick the categories to feature and drag to reorder. Each tile uses that category's own image, set on the category itself — so a picture chosen here is the same one used everywhere else. Leave empty to hide the whole section.
+   */
+  topCollections?: (number | Category)[] | null;
+  /**
    * Product bands shown below the hero, in this order. Up to 5. Drag to rearrange; delete one to remove it from the homepage.
    */
   sections?:
@@ -1253,6 +1261,8 @@ export interface HomePageSelect<T extends boolean = true> {
   subheading?: T;
   ctaLabel?: T;
   ctaLink?: T;
+  topCollectionsHeading?: T;
+  topCollections?: T;
   sections?:
     | T
     | {

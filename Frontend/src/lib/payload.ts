@@ -58,7 +58,9 @@ export const firstImage = (product: Product): Media | null => {
 }
 
 export async function getHomePage(): Promise<HomePageGlobal | null> {
-  return api<HomePageGlobal>('/api/globals/home-page?depth=1')
+  // depth 2 so a featured category's own image resolves — at depth 1 the
+  // category comes back but its image is still an id, and the tiles render blank.
+  return api<HomePageGlobal>('/api/globals/home-page?depth=2')
 }
 
 /**
