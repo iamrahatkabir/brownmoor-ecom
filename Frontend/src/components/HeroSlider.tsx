@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 export type Slide = { alt: string; href: null | string; src: string }
 
-/** How far a finger must travel before it counts as a swipe rather than a tap. */
+/** How far the pointer must travel before it counts as a drag rather than a tap. */
 const SWIPE_THRESHOLD_PX = 45
 
 /**
@@ -65,34 +65,69 @@ export function HeroSlider({
     return () => window.clearInterval(timer)
   }, [autoplaySeconds, count, index, paused])
 
-  // Where the finger went down, so touchend can tell a swipe from a tap.
-  const touchStartX = useRef<null | number>(null)
+  /**
+   * Dragging, by mouse or finger.
+   *
+   * Pointer events rather than touch events, so a mouse drag on a desktop and a
+   * swipe on a phone travel the same path instead of being written twice.
+   *
+   * The images carry `draggable={false}` for this to work at all: without it the
+   * browser starts its own image drag as soon as the cursor moves, and the
+   * gesture never reaches this code.
+   */
+  const dragStartX = useRef<null | number>(null)
+  const dragged = useRef(false)
+  const [dragging, setDragging] = useState(false)
 
-  const onTouchStart = (event: React.TouchEvent) => {
-    touchStartX.current = event.touches[0]?.clientX ?? null
-    // Hold the banner still while a finger is on it.
+  const onPointerDown = (event: React.PointerEvent) => {
+    dragStartX.current = event.clientX
+    dragged.current = false
+    setDragging(true)
+    // Hold the banner still while it is being handled.
     setPaused(true)
   }
 
-  const onTouchEnd = (event: React.TouchEvent) => {
-    const start = touchStartX.current
-    const end = event.changedTouches[0]?.clientX
-
-    touchStartX.current = null
-    setPaused(false)
-
-    if (start === null || end === undefined) {
+  const onPointerMove = (event: React.PointerEvent) => {
+    if (dragStartX.current === null) {
       return
     }
 
-    const travelled = end - start
+    if (Math.abs(event.clientX - dragStartX.current) >= SWIPE_THRESHOLD_PX) {
+      dragged.current = true
+    }
+  }
+
+  const endDrag = (event: React.PointerEvent) => {
+    const start = dragStartX.current
+
+    dragStartX.current = null
+    setDragging(false)
+    setPaused(false)
+
+    if (start === null) {
+      return
+    }
+
+    const travelled = event.clientX - start
 
     if (Math.abs(travelled) < SWIPE_THRESHOLD_PX) {
       return
     }
 
-    // Dragging left reveals what is to the right, as a page of paper would.
+    // Dragging left reveals what is to the right, as a sheet of paper would.
     go(travelled < 0 ? index + 1 : index - 1)
+  }
+
+  /**
+   * A drag that ends on a linked slide would otherwise also count as a click and
+   * navigate away. Captured on the way down so the anchor never sees it.
+   */
+  const onClickCapture = (event: React.MouseEvent) => {
+    if (dragged.current) {
+      event.preventDefault()
+      event.stopPropagation()
+      dragged.current = false
+    }
   }
 
   const regionRef = useRef<HTMLDivElement>(null)
@@ -129,14 +164,19 @@ export function HeroSlider({
     <section
       aria-label="Featured banners"
       aria-roledescription="carousel"
-      className="relative isolate overflow-hidden bg-ink"
+      className={`relative isolate touch-pan-y select-none overflow-hidden bg-ink ${
+        count > 1 ? (dragging ? 'cursor-grabbing' : 'cursor-grab') : ''
+      }`}
       onBlur={() => setPaused(false)}
+      onClickCapture={onClickCapture}
       // Stops the banner changing under a cursor that is about to click it.
       onFocus={() => setPaused(true)}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      onTouchEnd={onTouchEnd}
-      onTouchStart={onTouchStart}
+      onPointerCancel={endDrag}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={endDrag}
       ref={regionRef}
       tabIndex={-1}
     >
