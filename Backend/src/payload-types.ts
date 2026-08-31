@@ -122,10 +122,12 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     'home-page': HomePage;
+    navigation: Navigation;
     'shipping-settings': ShippingSetting;
   };
   globalsSelect: {
     'home-page': HomePageSelect<false> | HomePageSelect<true>;
+    navigation: NavigationSelect<false> | NavigationSelect<true>;
     'shipping-settings': ShippingSettingsSelect<false> | ShippingSettingsSelect<true>;
   };
   locale: null;
@@ -248,6 +250,8 @@ export interface Media {
   };
 }
 /**
+ * The menu order is set under Storefront → Navigation, where it can be arranged and then saved.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "categories".
  */
@@ -1230,6 +1234,19 @@ export interface HomePage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation".
+ */
+export interface Navigation {
+  id: number;
+  /**
+   * Drag to set the order of the menu, then press Save. Include child categories too — a child orders within its parent's dropdown. Anything left out still appears, after the categories listed here, in alphabetical order.
+   */
+  menu?: (number | Category)[] | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "shipping-settings".
  */
 export interface ShippingSetting {
@@ -1307,6 +1324,16 @@ export interface HomePageSelect<T extends boolean = true> {
         viewAllUrl?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation_select".
+ */
+export interface NavigationSelect<T extends boolean = true> {
+  menu?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

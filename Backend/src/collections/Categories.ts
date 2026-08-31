@@ -17,6 +17,8 @@ export const Categories: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['title', 'parent', 'slug'],
+    description:
+      'The menu order is set under Storefront → Navigation, where it can be arranged and then saved.',
     useAsTitle: 'title',
   },
   fields: [

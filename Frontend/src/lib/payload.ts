@@ -70,11 +70,38 @@ export async function getHomePage(): Promise<HomePageGlobal | null> {
  * a nav should not cost N round trips.
  */
 export async function getCategoryTree(): Promise<CategoryTree[]> {
-  const result = await api<Paginated<Category>>('/api/categories?depth=1&limit=100&sort=title')
+  /*
+   * Two requests, issued together: the categories themselves, and the order the
+   * admin arranged them in. Sorting server-side is not possible here — the
+   * order lives in a global, not on the category rows.
+   */
+  const [result, navigation] = await Promise.all([
+    api<Paginated<Category>>('/api/categories?depth=1&limit=100&sort=title'),
+    api<{ menu?: Array<Category | number> | null }>('/api/globals/navigation?depth=0'),
+  ])
 
   if (!result?.docs) {
     return []
   }
+
+  const arranged = (navigation?.menu ?? []).map((entry) =>
+    typeof entry === 'number' ? entry : entry.id,
+  )
+
+  /**
+   * Position in the admin's list, or the end for anything not in it.
+   *
+   * A category added after the menu was last arranged still appears — after the
+   * ordered ones, alphabetically, because the base query sorts by title. It is
+   * never silently dropped from the navigation.
+   */
+  const rank = (category: Category): number => {
+    const position = arranged.indexOf(category.id)
+
+    return position === -1 ? Number.MAX_SAFE_INTEGER : position
+  }
+
+  const inMenuOrder = (a: Category, b: Category): number => rank(a) - rank(b)
 
   const parentIdOf = (category: Category): number | null => {
     if (!category.parent) {
@@ -84,11 +111,13 @@ export async function getCategoryTree(): Promise<CategoryTree[]> {
     return typeof category.parent === 'number' ? category.parent : category.parent.id
   }
 
-  const roots = result.docs.filter((c) => parentIdOf(c) === null)
+  const roots = result.docs.filter((c) => parentIdOf(c) === null).sort(inMenuOrder)
 
   return roots.map((root) => ({
     ...root,
-    children: result.docs.filter((c) => parentIdOf(c) === root.id),
+    // Children are ordered by the same list, so a dropdown follows the admin's
+    // arrangement rather than the alphabet.
+    children: result.docs.filter((c) => parentIdOf(c) === root.id).sort(inMenuOrder),
   }))
 }
 

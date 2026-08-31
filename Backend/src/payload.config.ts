@@ -29,6 +29,7 @@ import {
 } from './collections/Variants'
 import { currenciesConfig } from './currencies'
 import { HomePage } from './globals/HomePage'
+import { Navigation } from './globals/Navigation'
 import { ShippingSettings } from './globals/ShippingSettings'
 import { cashOnDeliveryAdapter } from './payments/cashOnDelivery'
 
@@ -61,7 +62,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Categories, Coupons],
-  globals: [HomePage, ShippingSettings],
+  globals: [HomePage, Navigation, ShippingSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
