@@ -32,9 +32,9 @@ const notoBengali = Noto_Sans_Bengali({
 
 export const metadata: Metadata = {
   description:
-    'Kitchenware built to be used every day. Cookware, cutlery and bakeware, delivered across Bangladesh with cash on delivery.',
+    'দেশের সেরা কিচেনওয়ার ব্র্যান্ড এ পাচ্ছেন অসাধারণ ডিল এ অথেন্টিক প্রোডাক্ট',
   title: {
-    default: 'Brownmoor.com — Kitchenware',
+    default: 'Brownmoor.com',
     template: '%s | Brownmoor.com',
   },
 }
