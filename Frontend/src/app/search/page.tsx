@@ -4,6 +4,9 @@ import { ProductListing } from '@/components/ProductListing'
 import { searchProductsPage } from '@/lib/search'
 
 export const metadata: Metadata = {
+  // Google's own guidance is to keep internal search results out of the
+  // index — they compete with the category pages that should rank instead.
+  robots: { follow: true, index: false },
   title: 'Search',
 }
 

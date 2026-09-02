@@ -6,6 +6,10 @@ import { CheckoutSteps } from '@/components/checkout/CheckoutSteps'
 import { CONTACT } from '@/lib/contact'
 
 export const metadata: Metadata = {
+  // Someone else's order confirmation must never surface in a search
+  // result. `follow` is off too, so the id is not passed on as a referrer
+  // trail from anything this page links to.
+  robots: { follow: false, index: false },
   title: 'Order complete',
 }
 
