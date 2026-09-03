@@ -37,6 +37,37 @@ async function api<T>(path: string, revalidate = REVALIDATE_SECONDS): Promise<T 
   }
 }
 
+/**
+ * The fields a product tile actually draws.
+ *
+ * Listings used to query at depth 2, which recursively populated each
+ * product's `relatedProducts` — their galleries and rich-text descriptions
+ * included — and returned 14MB to render a dozen cards. Vercel's data cache
+ * refuses to store a response that large, so the entry could never be
+ * replaced: listings kept serving a snapshot taken before the newest products
+ * existed, while the products' own pages were fine. Asking for the eight
+ * fields a card reads brings the same query back in about 30KB.
+ */
+const CARD_FIELDS = [
+  'compareAtPriceInBDT',
+  'enableVariants',
+  'gallery',
+  'inventory',
+  'priceInBDT',
+  'slug',
+  'title',
+  // Variant rows carry their own price and stock, which a card sums for the
+  // "From ৳X" label, so the join has to come back populated.
+  'variants',
+] as const
+
+/** Payload reads `select` as one bracketed parameter per field. */
+export const selectCardFields = (params: URLSearchParams): void => {
+  for (const field of CARD_FIELDS) {
+    params.set(`select[${field}]`, 'true')
+  }
+}
+
 /** Absolute URL for a Payload upload; relative paths won't resolve cross-origin. */
 export const mediaURL = (media: Media | number | null | undefined, size?: string): string | null => {
   if (!media || typeof media === 'number') {
@@ -141,11 +172,14 @@ export async function getProducts({
   }
 
   const params = new URLSearchParams({
-    // depth 2 resolves gallery images and the variants' option labels.
-    depth: '2',
+    // depth 1 resolves the gallery images and the variant rows. Depth 2 also
+    // dragged in every related product's own gallery, which no card shows.
+    depth: '1',
     limit: String(ids?.length ?? limit),
     sort: '-createdAt',
   })
+
+  selectCardFields(params)
 
   if (featured) {
     params.set('where[featured][equals]', 'true')
@@ -199,11 +233,13 @@ export async function getProductsPage({
   page?: number
 }): Promise<ProductPage> {
   const params = new URLSearchParams({
-    depth: '2',
+    depth: '1',
     limit: String(PAGE_SIZE),
     page: String(Math.max(1, page)),
     sort: '-createdAt',
   })
+
+  selectCardFields(params)
 
   if (categorySlug) {
     params.set('where[categories.slug][equals]', categorySlug)

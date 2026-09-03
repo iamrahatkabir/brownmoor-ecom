@@ -1,3 +1,4 @@
+import { selectCardFields } from './payload'
 import type { Paginated, Product } from './types'
 
 const PAYLOAD_URL = process.env.NEXT_PUBLIC_PAYLOAD_URL || 'http://localhost:3000'
@@ -11,10 +12,14 @@ const PAYLOAD_URL = process.env.NEXT_PUBLIC_PAYLOAD_URL || 'http://localhost:300
  */
 export async function searchProducts(term: string, limit = 20, page = 1) {
   const params = new URLSearchParams({
-    depth: '2',
+    // Both results pages draw product cards, so they need the same narrow
+    // projection the catalogue listings use — see selectCardFields.
+    depth: '1',
     limit: String(limit),
     page: String(page),
   })
+
+  selectCardFields(params)
 
   params.set('where[or][0][title][like]', term)
   params.set('where[or][1][shortDescription][like]', term)
@@ -39,10 +44,14 @@ export async function searchProducts(term: string, limit = 20, page = 1) {
 /** Same query, but keeping the pagination envelope for the results page. */
 export async function searchProductsPage(term: string, limit = 20, page = 1) {
   const params = new URLSearchParams({
-    depth: '2',
+    // Both results pages draw product cards, so they need the same narrow
+    // projection the catalogue listings use — see selectCardFields.
+    depth: '1',
     limit: String(limit),
     page: String(page),
   })
+
+  selectCardFields(params)
 
   params.set('where[or][0][title][like]', term)
   params.set('where[or][1][shortDescription][like]', term)
