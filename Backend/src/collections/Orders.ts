@@ -130,7 +130,15 @@ export const ordersCollectionOverride: CollectionOverride = ({ defaultCollection
     // Staff work this list to pack and dispatch, so the useful columns are who
     // to call, where it goes and what to collect. The plugin's default shows
     // none of those.
-    defaultColumns: ['id', 'customerPhone', 'deliveryAddress', 'orderTotal', 'status', 'createdAt'],
+    defaultColumns: [
+      'id',
+      'customerName',
+      'customerPhone',
+      'deliveryAddress',
+      'orderTotal',
+      'status',
+      'createdAt',
+    ],
   },
   fields: [
     ...withItemRowLabel(defaultCollection.fields),
@@ -204,6 +212,21 @@ export const ordersCollectionOverride: CollectionOverride = ({ defaultCollection
      * List columns, read off the shipping address rather than stored again, so
      * they cannot drift from it and no migration is needed.
      */
+    {
+      name: 'customerName',
+      type: 'text',
+      admin: { description: 'From the delivery address.', readOnly: true },
+      hooks: {
+        afterRead: [
+          ({ data }) =>
+            [data?.shippingAddress?.firstName, data?.shippingAddress?.lastName]
+              .filter(Boolean)
+              .join(' ') || null,
+        ],
+      },
+      label: 'Name',
+      virtual: true,
+    },
     {
       name: 'customerPhone',
       type: 'text',

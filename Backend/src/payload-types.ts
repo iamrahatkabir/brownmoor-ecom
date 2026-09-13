@@ -592,6 +592,10 @@ export interface Order {
   /**
    * From the delivery address.
    */
+  customerName?: string | null;
+  /**
+   * From the delivery address.
+   */
   customerPhone?: string | null;
   /**
    * From the delivery address.
@@ -1053,6 +1057,7 @@ export interface OrdersSelect<T extends boolean = true> {
   shippingAmount?: T;
   shippingZone?: T;
   totalWeightGrams?: T;
+  customerName?: T;
   customerPhone?: T;
   deliveryAddress?: T;
   orderTotal?: T;
