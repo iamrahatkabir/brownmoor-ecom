@@ -87,10 +87,18 @@ no token.
 | Name | Value |
 | --- | --- |
 | `NEXT_PUBLIC_PAYLOAD_URL` | `https://<backend>.vercel.app` |
+| `NEXT_PUBLIC_SITE_URL` | the storefront's own URL, no trailing slash |
 
-This one variable does two jobs: server-side data fetching, and the
+`NEXT_PUBLIC_PAYLOAD_URL` does two jobs: server-side data fetching, and the
 `/api/*` rewrite in `next.config.ts` that proxies cart and checkout calls to
 Payload. Get it wrong and products render but the cart silently fails.
+
+`NEXT_PUBLIC_SITE_URL` is the storefront's own public origin, used to build
+absolute product links in the Meta feed at `/feed/meta.xml`. You will not know
+it until after the first deploy — deploy, copy the URL, set it, redeploy. Left
+unset it falls back to `http://localhost:3001`, and every link in the feed
+points at a machine Meta cannot reach. Nothing on the site itself breaks, so
+this fails silently unless you look at the feed.
 
 ## 4. Close the loop
 
@@ -127,9 +135,28 @@ happening — requests are rejected as cross-origin.
 ## Custom domains
 
 Add the domain to the storefront project, then update `STOREFRONT_URL` on the
-backend and redeploy. If the backend gets its own domain too, update
-`PAYLOAD_PUBLIC_SERVER_URL` on the backend and `NEXT_PUBLIC_PAYLOAD_URL` on the
-storefront to match.
+backend and `NEXT_PUBLIC_SITE_URL` on the storefront, and redeploy both. If the
+backend gets its own domain too, update `PAYLOAD_PUBLIC_SERVER_URL` on the
+backend and `NEXT_PUBLIC_PAYLOAD_URL` on the storefront to match.
+
+Moving to a custom domain changes the feed's URL, so update the data feed in
+Commerce Manager as well — see below.
+
+## Meta product feed
+
+The storefront publishes a catalogue feed for Facebook and Instagram at:
+
+```
+https://<storefront-domain>/feed/meta.xml
+```
+
+In Commerce Manager: open the catalogue, go to **Data sources → Add items →
+Data feed**, choose the scheduled-URL option, paste that address and set the
+currency to **BDT**. Hourly is plenty — the feed caches for an hour anyway.
+
+Meta fetches this from its own servers, so it has to be publicly reachable.
+`localhost` will not work, and neither will the feed's product images unless
+`NEXT_PUBLIC_PAYLOAD_URL` points somewhere public too.
 
 ## Known rough edges
 
